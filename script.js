@@ -135,12 +135,12 @@ function createItemDom(id, title, column, desc, comments, date) {
 
 const refreshLocal = function () {
     let columns = listsArr;
-    // let cards = cardsArr;
+    let cards = cardsArr;
     localStorage.removeItem('todoContainer');
     localStorage.setItem('todoContainer', JSON.stringify(columns));
 }
 
-function clearCreateWindow() {
+const clearCreateWindow = () => {
     boardTextareaTitle.value = '';
     value = '';
     boardEnterTitle.style.display = 'none';
@@ -153,8 +153,6 @@ const showInput = () => {
     enterBoardBtnSave.style.display = 'none';
 }
 
-button.addEventListener('click', showInput);
-
 const toggleSaveBtn = (e) => {
     value = e.target.value;
     if (value) {
@@ -163,16 +161,14 @@ const toggleSaveBtn = (e) => {
         enterBoardBtnSave.style.display = 'none';
     }
 }
-
+button.addEventListener('click', showInput);
 boardTextareaTitle.addEventListener('input', toggleSaveBtn);
-
-// const hideInput = () => {
-
-// }
+enterBoardBtnExit.addEventListener('click', clearCreateWindow)
 
 
 const addList = function () {
     const newList = new List();
+    // newList.id = uniqueID;
     newList.title = boardTextareaTitle.value
     listsArr.push(newList);
     //add to the local storage
@@ -181,47 +177,8 @@ const addList = function () {
     let listItem = createListDom(boardTextareaTitle.value);
     todoContainer.appendChild(listItem);
     boardTextareaTitle.value = '';
-
-
-
-    // newList.id = uniqueID;
-
-
-
-    // button.addEventListener('click', () => {
-    //     boardEnterTitle.style.display = 'flex';
-    //     button.style.display = 'none';
-    //     enterBoardBtnSave.style.display = 'none';
-
-    //     boardTextareaTitle.addEventListener('input', (e) => {
-    //         value = e.target.value;
-    //         if (value) {
-    //             enterBoardBtnSave.style.display = 'block';
-    //         } else {
-    //             enterBoardBtnSave.style.display = 'none';
-    //         }
-    //     })
-
-    // });
-
-    // enterBoardBtnExit.addEventListener('click', clearCreateWindow)
-
-    // enterBoardBtnSave.addEventListener('click', () => {
-    //     if (boardTextareaTitle.value.trim() != "") {
-    //         newList.title = boardTextareaTitle.value;
-    //         const item = createListDom(newList.title);
-    //         todoContainer.appendChild(item);
-    //         boardTextareaTitle.value = "";
-    //     }
-    //     console.log(newList, listsArr);
-    //     listsArr.push(newList);
-    //     refreshLocal();
-    //     boardEnterTitle.style.display = 'none'
-
-    //     clearCreateWindow();
-
-    // });
-
+    boardEnterTitle.style.display = 'none'
+    clearCreateWindow();
 }
 
 enterBoardBtnSave.addEventListener('click', addList)
