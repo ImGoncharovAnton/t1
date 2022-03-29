@@ -55,8 +55,8 @@ let uniqueID = new Date().getTime();
 
 
 class List {
-    constructor(title, cards = {}) {
-        // this.id = id;
+    constructor(id, title, cards = {}) {
+        this.id = id;
         this.title = title;
     }
 }
@@ -78,9 +78,9 @@ const removeItem = function () {
 }
 
 
-const createListDom = function (title) {
+const createListDom = function (id, title) {
     const divToDoList = document.createElement('div');
-    divToDoList.setAttribute('data-column-id', 1);
+    divToDoList.setAttribute('data-column-id', id);
     divToDoList.classList.add('todoList');
 
     divToDoList.innerHTML = `
@@ -111,7 +111,7 @@ const createListDom = function (title) {
 
 }
 
-function createItemDom(id, title, column, desc, comments, date) {
+function createItemDom(id, title, date, column, desc, comments) {
     const divCard = document.createElement('div');
     divCard.setAttribute('data-note-id', id);
     divCard.classList.add('card-preview');
@@ -133,11 +133,13 @@ function createItemDom(id, title, column, desc, comments, date) {
 
 
 
-const refreshLocal = function () {
+const refreshLocal = () => {
     let columns = listsArr;
     let cards = cardsArr;
     localStorage.removeItem('todoContainer');
+    localStorage.removeItem('todoCards');
     localStorage.setItem('todoContainer', JSON.stringify(columns));
+    localStorage.setItem('todoCards', JSON.stringify(cards));
 }
 
 const clearCreateWindow = () => {
@@ -161,29 +163,25 @@ const toggleSaveBtn = (e) => {
         enterBoardBtnSave.style.display = 'none';
     }
 }
-button.addEventListener('click', showInput);
-boardTextareaTitle.addEventListener('input', toggleSaveBtn);
-enterBoardBtnExit.addEventListener('click', clearCreateWindow)
 
-
-const addList = function () {
+const addList = () => {
     const newList = new List();
-    // newList.id = uniqueID;
+    newList.id = uniqueID;
     newList.title = boardTextareaTitle.value
+    console.log(newList);
     listsArr.push(newList);
     //add to the local storage
     refreshLocal();
     //change the dom
-    let listItem = createListDom(boardTextareaTitle.value);
+    let listItem = createListDom(newList.id, boardTextareaTitle.value);
     todoContainer.appendChild(listItem);
     boardTextareaTitle.value = '';
     boardEnterTitle.style.display = 'none'
     clearCreateWindow();
 }
 
-enterBoardBtnSave.addEventListener('click', addList)
 
-function clearList() {
+const clearList = () => {
     listsArr = [];
     localStorage.removeItem('todoContainer');
     todoContainer.innerHTML = "";
@@ -195,21 +193,27 @@ function clearList() {
 // }
 
 
-console.log(listsArr);
+
 window.onload = function () {
 
     const list = localStorage.getItem('todoContainer');
     if (list != null) {
         columns = JSON.parse(list);
+
         listsArr = columns;
+        console.log(listsArr);
         for (let i = 0; i < listsArr.length; i++) {
-            // let id = listsArr[i].id;
+            let id = listsArr[i].id;
             let title = listsArr[i].title;
-            let item = createListDom(title)
+            let item = createListDom(id, title)
             todoContainer.appendChild(item);
         }
     }
 
 }
 
+button.addEventListener('click', showInput);
+boardTextareaTitle.addEventListener('input', toggleSaveBtn);
+enterBoardBtnExit.addEventListener('click', clearCreateWindow)
+enterBoardBtnSave.addEventListener('click', addList)
 
