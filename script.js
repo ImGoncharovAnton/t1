@@ -172,11 +172,11 @@ function createCardDom(id, title, column, date, desc, comments) {
 
 const refreshLocal = () => {
     let columns = listsArr;
-    let cards = cardsArr;
+    let items = cardsArr;
     localStorage.removeItem('todoContainer');
     localStorage.removeItem('todoCards');
     localStorage.setItem('todoContainer', JSON.stringify(columns));
-    localStorage.setItem('todoCards', JSON.stringify(cards));
+    localStorage.setItem('todoCards', JSON.stringify(items));
 }
 
 const clearCreateWindow = () => {
@@ -276,9 +276,6 @@ const addCard = () => {
     main.addEventListener('click', f1)
 }
 
-addCard()
-
-
 // function clearCard () {
 //     cardsArr = [];
 //     localStorage.removeItem('');
@@ -304,16 +301,32 @@ addCard()
 // })
 window.onload = () => {
     const list = localStorage.getItem('todoContainer');
-    if (list != null) {
+    const card = localStorage.getItem('todoCards');
+    console.log(list);
+    console.log(card);
+    if (list != null || card != null) {
         columns = JSON.parse(list);
+        items = JSON.parse(card);
 
+        cardsArr = items;
         listsArr = columns;
         console.log(listsArr);
+        console.log(cardsArr);
         for (let i = 0; i < listsArr.length; i++) {
             let id = listsArr[i].id;
             let title = listsArr[i].title;
             let item = createListDom(id, title)
             todoContainer.appendChild(item);
+        }
+        for (let j = 0; j < cardsArr.length; j++) {
+            let id = cardsArr[j].id;
+            let title = cardsArr[j].title;
+            let column = cardsArr[j].column;
+            let date = cardsArr[j].date;
+            let item = createCardDom(id, title, column, date);
+            // -^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^_
+            // Пробую поиск элемента по DOM и сравнение data-column-id со значением column, и если совпадает, то рендерим в нем.
+            console.log(column);
         }
     }
 }
@@ -322,3 +335,4 @@ button.addEventListener('click', showInput);
 boardTextareaTitle.addEventListener('input', toggleSaveBtn);
 enterBoardBtnExit.addEventListener('click', clearCreateWindow)
 enterBoardBtnSave.addEventListener('click', addList)
+addCard()
