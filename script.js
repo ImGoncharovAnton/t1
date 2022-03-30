@@ -55,20 +55,23 @@ let uniqueID = new Date().getTime();
 
 
 class List {
-    constructor(id, title, cards = {}) {
+    constructor(id, title, cardsArr = []) {
         this.id = id;
         this.title = title;
+        this.cardsArr = cardsArr;
     }
 }
 
 
 class Card {
-    constructor(id, title, column, desc = null, comments = null, date = "") {
+    constructor(id, title, column, date = "", description = null, comments = null) {
         this.id = id;
         this.title = title;
         this.column = column;
+        this.date = date;
         this.description = description;
         this.comments = comments;
+        this.domElement
     }
 }
 
@@ -79,59 +82,93 @@ const removeItem = function () {
 
 
 const createListDom = function (id, title) {
-    const divToDoList = document.createElement('div');
-    divToDoList.setAttribute('data-column-id', id);
-    divToDoList.classList.add('todoList');
+    const divList = document.createElement('div');
+    divList.setAttribute('data-column-id', id);
+    divList.classList.add('todoList');
+    const headingListTitle = document.createElement('h2');
+    headingListTitle.textContent = title;
+    const listBtnDots = document.createElement('button');
+    listBtnDots.classList.add('dots-btn');
+    listBtnDots.innerHTML = `
+        <span class="dots-btn__dot"></span>
+        <span class="dots-btn__dot"></span>
+        <span class="dots-btn__dot"></span>
+    `;
+    const divListBody = document.createElement('div');
+    divListBody.classList.add('todoList__body');
+    // const divCardsBody = document.createElement('div');
+    // divCardsBody.classList.add('todoList__cards');
+    // const divInputBlock = document.createElement('div');
+    // divInputBlock.classList.add('enter-title-block');
+    // const textareaInputBlock = document.createElement('textarea');
+    // textareaInputBlock.classList.add('textarea-title');
+    // textareaInputBlock.placeholder = "Enter a title for the card...";
+    // const divBtnsInputBlock = document.createElement('div');
+    // divBtnsInputBlock.classList.add('enter-title-block__buttons');
+    // const btnAddInputBlock = document.createElement('button');
+    // btnAddInputBlock.classList.add('btn-dark');
+    // btnAddInputBlock.textContent = "Add a card";
+    // const btnDelInputBlock = document.createElement('button');
+    // btnDelInputBlock.classList.add('del-btn');
+    // btnDelInputBlock.innerHTML = '<span></span>';
+    const btnAddMain = document.createElement('button');
+    btnAddMain.id = 'cardBtn';
+    btnAddMain.classList.add('btn-add');
+    btnAddMain.innerHTML = `
+        <div class="btn-add__circle-plus"></div>
+        <p>Add a card</p>
+    `;
 
-    divToDoList.innerHTML = `
-        <h2>
-        ${title}
-        <button class="dots-btn">
-            <span class="dots-btn__dot"></span>
-            <span class="dots-btn__dot"></span>
-            <span class="dots-btn__dot"></span>
-        </button>
-        </h2>
-        <div class="todoList__body">
-            <div class="todoList__cards"></div>
-            <div class="enter-title-block">
-                <textarea placeholder="Enter a title for the card" class="textarea-title"></textarea>
-                <div class="enter-title-block__buttons">
-                    <button class="btn-dark"">Add a card</button>
-                    <button class="del-btn"><span></span></button>
-                </div>
-            </div>
-            <button class="btn-add" id="to-do-list-button">
-                <div class="btn-add__circle-plus"></div>
-                <p>Add a card</p>
-            </button>
-        </div>
-    `
-    return divToDoList;
+    divList.append(headingListTitle);
+    headingListTitle.append(listBtnDots);
+    divList.append(divListBody);
+    // divListBody.append(divCardsBody);
+    // divListBody.append(divInputBlock);
+    // divInputBlock.append(textareaInputBlock);
+    // divInputBlock.append(divBtnsInputBlock)
+    // divBtnsInputBlock.append(btnAddInputBlock);
+    // divBtnsInputBlock.append(btnDelInputBlock);
+    divListBody.append(btnAddMain);
+
+    return divList;
 
 }
 
-function createItemDom(id, title, date, column, desc, comments) {
+function createCardDom(id, title, column, date, desc, comments) {
+    const divCardContainer = document.createElement('div');
+    divCardContainer.classList.add('todoList__cards')
     const divCard = document.createElement('div');
     divCard.setAttribute('data-note-id', id);
     divCard.classList.add('card-preview');
-    divCard.innerHTML = `
-    <div class="card-preview__top">
-        <div class="card-preview__date">${date}</div>
-        <button class="dots-btn">
-            <span class="dots-btn__dot"></span>
-            <span class="dots-btn__dot"></span>
-            <span class="dots-btn__dot"></span>
-        </button>
-    </div>
-    <h3 class="card-preview__title">${title}</h3>
-    <div class="card-preview__count-comments">3 comments</div>
-    `
-    return divCard;
+    const divCardTop = document.createElement('div');
+    divCardTop.classList.add('card-preview__top');
+    const divCardDate = document.createElement('div');
+    divCardDate.classList.add('card-preview__date');
+    divCardDate.textContent = date;
+    const cardBtnDots = document.createElement('button');
+    cardBtnDots.classList.add('dots-btn');
+    cardBtnDots.innerHTML = `
+        <span class="dots-btn__dot"></span>
+        <span class="dots-btn__dot"></span>
+        <span class="dots-btn__dot"></span>
+    `;
+    const headingCardTitle = document.createElement('h3');
+    headingCardTitle.classList.add('card-preview__title');
+    headingCardTitle.textContent = title;
+    const divCardComments = document.createElement('div');
+    divCardComments.classList.add('card-preview__count-comments');
+    divCardComments.innerText = '3 comments';
+
+    divCardContainer.append(divCard);
+    divCard.append(divCardTop);
+    divCardTop.append(divCardDate);
+    divCardTop.append(cardBtnDots);
+    divCard.append(headingCardTitle);
+    divCard.append(divCardComments);
+
+    return divCardContainer;
 
 }
-
-
 
 const refreshLocal = () => {
     let columns = listsArr;
@@ -164,9 +201,15 @@ const toggleSaveBtn = (e) => {
     }
 }
 
+const clearList = () => {
+    listsArr = [];
+    localStorage.removeItem('todoContainer');
+    todoContainer.innerHTML = "";
+}
+
 const addList = () => {
     const newList = new List();
-    newList.id = uniqueID;
+    newList.id = new Date().getTime();
     newList.title = boardTextareaTitle.value
     console.log(newList);
     listsArr.push(newList);
@@ -180,12 +223,61 @@ const addList = () => {
     clearCreateWindow();
 }
 
+const addCard = () => {
+    const main = document.querySelector('.todoContainer');
 
-const clearList = () => {
-    listsArr = [];
-    localStorage.removeItem('todoContainer');
-    todoContainer.innerHTML = "";
+    const f1 = (e) => {
+        const elTarget = e.target;
+        const column = e.target.closest('[data-column-id]')
+        const idColumn = e.target.closest('[data-column-id]').getAttribute('data-column-id');
+        const bodyTarget = e.target.classList.contains('todoList__body');
+        console.log(bodyTarget);
+
+        if (elTarget.classList.contains('btn-add')) {
+            elTarget.style.display = 'none';
+            const divInputBlock = document.createElement('div');
+            divInputBlock.classList.add('enter-title-block');
+            divInputBlock.style.display = 'flex';
+            const textareaInputBlock = document.createElement('textarea');
+            textareaInputBlock.classList.add('textarea-title');
+            textareaInputBlock.placeholder = "Enter a title for the card...";
+            const divBtnsInputBlock = document.createElement('div');
+            divBtnsInputBlock.classList.add('enter-title-block__buttons');
+            const btnAddInputBlock = document.createElement('button');
+            btnAddInputBlock.classList.add('btn-dark');
+            btnAddInputBlock.textContent = "Add a card";
+            const btnDelInputBlock = document.createElement('button');
+            btnDelInputBlock.classList.add('del-btn');
+            btnDelInputBlock.innerHTML = '<span></span>';
+            divInputBlock.append(textareaInputBlock);
+            divInputBlock.append(divBtnsInputBlock)
+            divBtnsInputBlock.append(btnAddInputBlock);
+            divBtnsInputBlock.append(btnDelInputBlock);
+            elTarget.before(divInputBlock)
+            const addCardF = () => {
+                const newCard = new Card();
+                newCard.id = new Date().getTime();
+                newCard.title = textareaInputBlock.value;
+                newCard.column = idColumn;
+                newCard.date = new Date().toLocaleTimeString("en");
+                cardsArr.push(newCard)
+                refreshLocal();
+                const item = createCardDom(newCard.id, newCard.title, newCard.column, newCard.date);
+                elTarget.before(item);
+                console.log(bodyTarget);
+                textareaInputBlock.value = "";
+                divInputBlock.style.display = 'none';
+                elTarget.style.display = 'flex';
+            }
+            divBtnsInputBlock.addEventListener('click', addCardF)
+
+        }
+    }
+    main.addEventListener('click', f1)
 }
+
+addCard()
+
 
 // function clearCard () {
 //     cardsArr = [];
@@ -194,8 +286,23 @@ const clearList = () => {
 
 
 
-window.onload = function () {
 
+// window.addEventListener('DOMContentLoaded', () => {
+//     const list = localStorage.getItem('todoContainer');
+//     if (list != null) {
+//         columns = JSON.parse(list);
+
+//         listsArr = columns;
+//         console.log(listsArr);
+//         for (let i = 0; i < listsArr.length; i++) {
+//             let id = listsArr[i].id;
+//             let title = listsArr[i].title;
+//             let item = createListDom(id, title)
+//             todoContainer.appendChild(item);
+//         }
+//     }
+// })
+window.onload = () => {
     const list = localStorage.getItem('todoContainer');
     if (list != null) {
         columns = JSON.parse(list);
@@ -209,11 +316,9 @@ window.onload = function () {
             todoContainer.appendChild(item);
         }
     }
-
 }
 
 button.addEventListener('click', showInput);
 boardTextareaTitle.addEventListener('input', toggleSaveBtn);
 enterBoardBtnExit.addEventListener('click', clearCreateWindow)
 enterBoardBtnSave.addEventListener('click', addList)
-
