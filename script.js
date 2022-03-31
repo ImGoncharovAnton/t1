@@ -202,12 +202,30 @@ function fullModalEdit() {
     ///
 }
 
+// -^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^^_^_^_^_^_^_^_^_^__^^_^_^
+
+// textarea при value !== "" скрывать кнопку показа add block
+
+
 function removeCard() {
+
+
+
+    // Обращаемся к блоку-контейнеру общему для карточек, находим ребенка на уровень ниже и ремувим его
+    // Вытаскиваем предварительно айдишник ребенка, запускаем цикл перебора массива карточек, где сравниваем айдишник в массиве, и нынешний, и слайсом по индексу удаляем элемент
+    // Обновляем локал сторадж, прерываем цикл.
+
     const context = this;
-    const parent = context.closest('.card-preview');
-    const parentId = parent.getAttribute('data-note-id');
+    const parent =  context.closest('.todoList__body')
+    const cardThis = context.closest('.card-preview');
+    const cardThisId = cardThis.getAttribute('data-note-id');
+    parent.removeChild(cardThis)
+
+    
+
     console.log(parent);
-    console.log(parentId);
+    console.log(cardThis);
+    console.log(cardThisId);
     
 
 }
