@@ -75,10 +75,37 @@ class Card {
     }
 }
 
+// const removeItem = function () {
+//     var parent = this.parentElement.parentElement;
+//     parent.removeChild(this.parentElement);
 
-const removeItem = function () {
+//     var data = this.parentElement.firstChild.innerText;
+//     for (var i = 0; i < listArray.length; i++) {
 
-}
+//         if (listArray[i].content == data) {
+//             listArray.splice(i, 1);
+//             refreshLocal();
+//             break;
+//         }
+//     }
+
+// Функция для обновления данных, например, добавление описания, комментов, или изменение заголовка карточки
+// -^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^
+// var changeListArray = function(data,status){
+
+//     for(var i=0; i < listArray.length; i++){
+
+//         if(listArray[i].content == data){
+//             listArray[i].status = status;
+//             refreshLocal();
+//             break;
+//         }
+//     }
+// }
+
+
+
+
 
 
 const createListDom = function (id, title) {
@@ -96,21 +123,6 @@ const createListDom = function (id, title) {
     `;
     const divListBody = document.createElement('div');
     divListBody.classList.add('todoList__body');
-    // const divCardsBody = document.createElement('div');
-    // divCardsBody.classList.add('todoList__cards');
-    // const divInputBlock = document.createElement('div');
-    // divInputBlock.classList.add('enter-title-block');
-    // const textareaInputBlock = document.createElement('textarea');
-    // textareaInputBlock.classList.add('textarea-title');
-    // textareaInputBlock.placeholder = "Enter a title for the card...";
-    // const divBtnsInputBlock = document.createElement('div');
-    // divBtnsInputBlock.classList.add('enter-title-block__buttons');
-    // const btnAddInputBlock = document.createElement('button');
-    // btnAddInputBlock.classList.add('btn-dark');
-    // btnAddInputBlock.textContent = "Add a card";
-    // const btnDelInputBlock = document.createElement('button');
-    // btnDelInputBlock.classList.add('del-btn');
-    // btnDelInputBlock.innerHTML = '<span></span>';
     const btnAddMain = document.createElement('button');
     btnAddMain.id = 'cardBtn';
     btnAddMain.classList.add('btn-add');
@@ -118,25 +130,20 @@ const createListDom = function (id, title) {
         <div class="btn-add__circle-plus"></div>
         <p>Add a card</p>
     `;
+    // add listener for create new cards
+    btnAddMain.addEventListener('click', addToggleCard);
 
     divList.append(headingListTitle);
     headingListTitle.append(listBtnDots);
     divList.append(divListBody);
-    // divListBody.append(divCardsBody);
-    // divListBody.append(divInputBlock);
-    // divInputBlock.append(textareaInputBlock);
-    // divInputBlock.append(divBtnsInputBlock)
-    // divBtnsInputBlock.append(btnAddInputBlock);
-    // divBtnsInputBlock.append(btnDelInputBlock);
     divListBody.append(btnAddMain);
+
 
     return divList;
 
 }
 
 function createCardDom(id, title, column, date, desc, comments) {
-    const divCardContainer = document.createElement('div');
-    divCardContainer.classList.add('todoList__cards')
     const divCard = document.createElement('div');
     divCard.setAttribute('data-note-id', id);
     divCard.classList.add('card-preview');
@@ -152,6 +159,7 @@ function createCardDom(id, title, column, date, desc, comments) {
         <span class="dots-btn__dot"></span>
         <span class="dots-btn__dot"></span>
     `;
+    cardBtnDots.addEventListener('click', showModalCard)
     const headingCardTitle = document.createElement('h3');
     headingCardTitle.classList.add('card-preview__title');
     headingCardTitle.textContent = title;
@@ -159,14 +167,48 @@ function createCardDom(id, title, column, date, desc, comments) {
     divCardComments.classList.add('card-preview__count-comments');
     divCardComments.innerText = '3 comments';
 
-    divCardContainer.append(divCard);
     divCard.append(divCardTop);
     divCardTop.append(divCardDate);
     divCardTop.append(cardBtnDots);
     divCard.append(headingCardTitle);
     divCard.append(divCardComments);
 
-    return divCardContainer;
+    return divCard;
+
+}
+
+function showModalCard() {
+    const parent = this.parentElement;
+
+    const modalState = document.createElement('div');
+    modalState.classList.add('modal-state');
+    const btnEdit = document.createElement('button');
+    btnEdit.classList.add('modal-state__btn');
+    btnEdit.textContent = 'Edit';
+    const btnDelete = document.createElement('button');
+    btnDelete.classList.add('modal-state__btn');
+    btnDelete.textContent = 'Delete';
+
+
+    btnEdit.addEventListener('click', fullModalEdit);
+    btnDelete.addEventListener('click', removeCard);
+
+    modalState.append(btnEdit);
+    modalState.append(btnDelete);
+    parent.append(modalState)
+}
+
+function fullModalEdit() {
+    ///
+}
+
+function removeCard() {
+    const context = this;
+    const parent = context.closest('.card-preview');
+    const parentId = parent.getAttribute('data-note-id');
+    console.log(parent);
+    console.log(parentId);
+    
 
 }
 
@@ -201,11 +243,28 @@ const toggleSaveBtn = (e) => {
     }
 }
 
-const clearList = () => {
+// -^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^
+
+// Для полной очистки
+
+const clearAll = () => {
     listsArr = [];
+    cardsArr = [];
     localStorage.removeItem('todoContainer');
+    localStorage.removeItem('todoCards')
     todoContainer.innerHTML = "";
 }
+
+// const clearList = () => {
+//     listsArr = [];
+//     localStorage.removeItem('todoContainer');
+//     todoContainer.innerHTML = "";
+// }
+
+// function clearCard () {
+//     cardsArr = [];
+//     localStorage.removeItem('');
+// }
 
 const addList = () => {
     const newList = new List();
@@ -223,116 +282,174 @@ const addList = () => {
     clearCreateWindow();
 }
 
-const addCard = () => {
-    const main = document.querySelector('.todoContainer');
 
-    const f1 = (e) => {
-        const elTarget = e.target;
-        const column = e.target.closest('[data-column-id]')
-        const idColumn = e.target.closest('[data-column-id]').getAttribute('data-column-id');
-        const bodyTarget = e.target.classList.contains('todoList__body');
-        console.log(bodyTarget);
+function addToggleCard() {
+    // Вешаем обработчика на кнопку в листе созданном, и вызываем эту функцию
+    const btnToggle = this;
+    let parentDiv = this.parentElement.parentElement;
+    let columnId = parentDiv.getAttribute('data-column-id');
+    // btnToggle.style.display = 'none';
+    const divInputBlock = document.createElement('div');
+    divInputBlock.classList.add('enter-title-block');
+    divInputBlock.style.display = 'flex';
+    const textareaInputBlock = document.createElement('textarea');
+    textareaInputBlock.classList.add('textarea-title');
+    textareaInputBlock.placeholder = "Enter a title for the card...";
+    const divBtnsInputBlock = document.createElement('div');
+    divBtnsInputBlock.classList.add('enter-title-block__buttons');
+    const btnAddInputBlock = document.createElement('button');
+    btnAddInputBlock.classList.add('btn-dark');
+    btnAddInputBlock.textContent = "Add a card";
+    const btnDelInputBlock = document.createElement('button');
+    btnDelInputBlock.classList.add('del-btn');
+    btnDelInputBlock.innerHTML = '<span></span>';
+    divInputBlock.append(textareaInputBlock);
+    divInputBlock.append(divBtnsInputBlock)
+    divBtnsInputBlock.append(btnAddInputBlock);
+    divBtnsInputBlock.append(btnDelInputBlock);
+    btnToggle.before(divInputBlock);
 
-        if (elTarget.classList.contains('btn-add')) {
-            elTarget.style.display = 'none';
-            const divInputBlock = document.createElement('div');
-            divInputBlock.classList.add('enter-title-block');
-            divInputBlock.style.display = 'flex';
-            const textareaInputBlock = document.createElement('textarea');
-            textareaInputBlock.classList.add('textarea-title');
-            textareaInputBlock.placeholder = "Enter a title for the card...";
-            const divBtnsInputBlock = document.createElement('div');
-            divBtnsInputBlock.classList.add('enter-title-block__buttons');
-            const btnAddInputBlock = document.createElement('button');
-            btnAddInputBlock.classList.add('btn-dark');
-            btnAddInputBlock.textContent = "Add a card";
-            const btnDelInputBlock = document.createElement('button');
-            btnDelInputBlock.classList.add('del-btn');
-            btnDelInputBlock.innerHTML = '<span></span>';
-            divInputBlock.append(textareaInputBlock);
-            divInputBlock.append(divBtnsInputBlock)
-            divBtnsInputBlock.append(btnAddInputBlock);
-            divBtnsInputBlock.append(btnDelInputBlock);
-            elTarget.before(divInputBlock)
-            const addCardF = () => {
-                const newCard = new Card();
-                newCard.id = new Date().getTime();
-                newCard.title = textareaInputBlock.value;
-                newCard.column = idColumn;
-                newCard.date = new Date().toLocaleTimeString("en");
-                cardsArr.push(newCard)
-                refreshLocal();
-                const item = createCardDom(newCard.id, newCard.title, newCard.column, newCard.date);
-                elTarget.before(item);
-                console.log(bodyTarget);
-                textareaInputBlock.value = "";
-                divInputBlock.style.display = 'none';
-                elTarget.style.display = 'flex';
-            }
-            divBtnsInputBlock.addEventListener('click', addCardF)
+    // add listener for btns
+    btnAddInputBlock.addEventListener('click', addCard);
+    btnDelInputBlock.addEventListener('click', removeToggleCard);
+    console.log('btnToggle', btnToggle);
+    console.log('parentDiv', parentDiv);
+    console.log('columnId', columnId);
 
-        }
+    // blur криво работает пока что 
+    // textareaInputBlock.addEventListener('blur', removeToggleCard)
+
+    function addCard() {
+        const newCard = new Card();
+        newCard.id = new Date().getTime();
+        newCard.title = textareaInputBlock.value;
+        newCard.column = columnId;
+        newCard.date = new Date().toLocaleTimeString("en");
+        console.log(newCard);
+        //add to the local storage
+        cardsArr.push(newCard)
+        //change the dom
+        refreshLocal();
+        const item = createCardDom(newCard.id, newCard.title, newCard.column, newCard.date);
+        divInputBlock.before(item);
+        removeToggleCard();
     }
-    main.addEventListener('click', f1)
+
+    function removeToggleCard() {
+        textareaInputBlock.value = "";
+        divInputBlock.style.display = 'none';
+        btnToggle.style.display = 'flex';
+    }
 }
 
-// function clearCard () {
-//     cardsArr = [];
-//     localStorage.removeItem('');
-// }
 
 
 
 
-// window.addEventListener('DOMContentLoaded', () => {
-//     const list = localStorage.getItem('todoContainer');
-//     if (list != null) {
-//         columns = JSON.parse(list);
+// const addCard = () => {
+//     const main = document.querySelector('.todoContainer');
 
-//         listsArr = columns;
-//         console.log(listsArr);
-//         for (let i = 0; i < listsArr.length; i++) {
-//             let id = listsArr[i].id;
-//             let title = listsArr[i].title;
-//             let item = createListDom(id, title)
-//             todoContainer.appendChild(item);
+//     const f1 = (e) => {
+//         const elTarget = e.target;
+//         const column = e.target.closest('[data-column-id]');
+//         const idColumn = e.target.closest('[data-column-id]').getAttribute('data-column-id');
+//         const bodyTarget = e.target.classList.contains('todoList__body');
+//         console.log(bodyTarget);
+
+//         if (elTarget.classList.contains('btn-add')) {
+//             console.log(elTarget.children);
+//             elTarget.style.display = 'none';
+//             const divInputBlock = document.createElement('div');
+//             divInputBlock.classList.add('enter-title-block');
+//             divInputBlock.style.display = 'flex';
+//             const textareaInputBlock = document.createElement('textarea');
+//             textareaInputBlock.classList.add('textarea-title');
+//             textareaInputBlock.placeholder = "Enter a title for the card...";
+//             const divBtnsInputBlock = document.createElement('div');
+//             divBtnsInputBlock.classList.add('enter-title-block__buttons');
+//             const btnAddInputBlock = document.createElement('button');
+//             btnAddInputBlock.classList.add('btn-dark');
+//             btnAddInputBlock.textContent = "Add a card";
+//             const btnDelInputBlock = document.createElement('button');
+//             btnDelInputBlock.classList.add('del-btn');
+//             btnDelInputBlock.innerHTML = '<span></span>';
+//             divInputBlock.append(textareaInputBlock);
+//             divInputBlock.append(divBtnsInputBlock)
+//             divBtnsInputBlock.append(btnAddInputBlock);
+//             divBtnsInputBlock.append(btnDelInputBlock);
+//             elTarget.before(divInputBlock);
+
+//             const toggleInputBlock = () => {
+//                 textareaInputBlock.value = "";
+//                 divInputBlock.style.display = 'none';
+//                 elTarget.style.display = 'flex';
+//             }
+
+//             const addCardF = () => {
+//                 const newCard = new Card();
+//                 newCard.id = new Date().getTime();
+//                 newCard.title = textareaInputBlock.value;
+//                 newCard.column = idColumn;
+//                 newCard.date = new Date().toLocaleTimeString("en");
+//                 console.log(newCard);
+//                 //add to the local storage
+//                 cardsArr.push(newCard)
+//                 //change the dom
+//                 refreshLocal();
+//                 const item = createCardDom(newCard.id, newCard.title, newCard.column, newCard.date);
+//                 elTarget.before(item);
+//                 console.log(bodyTarget);
+//                 toggleInputBlock();
+//             }
+
+//             btnAddInputBlock.addEventListener('click', addCardF);
+//             btnDelInputBlock.addEventListener('click', toggleInputBlock)
+
 //         }
 //     }
-// })
+//     main.addEventListener('click', f1)
+// }
+
 window.onload = () => {
     const list = localStorage.getItem('todoContainer');
     const card = localStorage.getItem('todoCards');
-    console.log(list);
-    console.log(card);
-    if (list != null || card != null) {
+    if (list != null) {
         columns = JSON.parse(list);
-        items = JSON.parse(card);
-
-        cardsArr = items;
         listsArr = columns;
-        console.log(listsArr);
-        console.log(cardsArr);
+        console.log('listsArr', listsArr);
         for (let i = 0; i < listsArr.length; i++) {
             let id = listsArr[i].id;
             let title = listsArr[i].title;
-            let item = createListDom(id, title)
-            todoContainer.appendChild(item);
+            let listOne = createListDom(id, title)
+            todoContainer.appendChild(listOne);
         }
+    }
+    if (card != null) {
+        items = JSON.parse(card);
+        cardsArr = items;
+        console.log('cardsArr', cardsArr);
+        const parentDiv = document.querySelectorAll('.todoList');
         for (let j = 0; j < cardsArr.length; j++) {
             let id = cardsArr[j].id;
             let title = cardsArr[j].title;
             let column = cardsArr[j].column;
             let date = cardsArr[j].date;
-            let item = createCardDom(id, title, column, date);
-            // -^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^_
-            // Пробую поиск элемента по DOM и сравнение data-column-id со значением column, и если совпадает, то рендерим в нем.
-            console.log(column);
+            let cardOne = createCardDom(id, title, column, date);
+            parentDiv.forEach(el => {
+                if (el.getAttribute('data-column-id') === column) {
+                    let item = el.children[1].querySelector('.btn-add');
+                    item.insertAdjacentElement('beforebegin', cardOne);
+                };
+            })
         }
     }
+
 }
+
+// add event buttons for create new lists
 
 button.addEventListener('click', showInput);
 boardTextareaTitle.addEventListener('input', toggleSaveBtn);
 enterBoardBtnExit.addEventListener('click', clearCreateWindow)
 enterBoardBtnSave.addEventListener('click', addList)
-addCard()
+// addCard()

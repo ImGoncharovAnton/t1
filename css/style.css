@@ -319,11 +319,11 @@ body._lock {
     padding: 20px 10px 10px 10px;
 }
 
-.todoList__cards {
+/* .todoList__cards {
     display: flex;
     flex-direction: column;
     gap: 10px;
-}
+} */
 
 .btn-add {
     display: flex;
@@ -461,6 +461,7 @@ body._lock {
     align-items: center;
     padding-bottom: 10px;
     border-bottom: 1px solid #ebeff4;
+    position: relative;
 }
 
 .card-preview__date {
@@ -523,6 +524,41 @@ body._lock {
     border-radius: 4px;
     cursor: pointer;
 }
+
+/* --------------------MODAL----------------- */
+
+.modal-state {
+    position: absolute;
+    top: 25px;
+    right: -40px;
+    background: #ffffff;
+    border: 1px solid #ebeff4;
+    box-shadow: -10px 10px 30px rgba(39, 51, 79, 0.1);
+    border-radius: 3px;
+    width: 75px;
+    height: 60px;
+}
+
+.modal-state__btn {
+    display: block;
+    width: 100%;
+    font-size: 14px;
+    line-height: 17px;
+    color: #27334f;
+    padding: 8px 15px;
+    text-align: start;
+    transition: all 0.3s ease 0s;
+}
+
+.modal-state__btn:hover {
+    background: #27334f;
+    color: #fff;
+}
+
+/* --------------------full modal ----------------------------*/
+
+
+
 
 .modal-container {
     display: flex;
