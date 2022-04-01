@@ -73,21 +73,31 @@ class Card {
         this.comments = comments;
         this.domElement
     }
+
+    setTitle(value) {
+        this.title = value;
+    }
+
+    addDesc(desc) {
+        this.description = desc;
+    }
+
+    addComment(comment) {
+        if (!this.comments) {
+            this.comments = {};
+        }
+        this.comments[comment.id] = comment;
+    }
+
+    removeComment(id) {
+        delete this.comments[id];
+        if (Object.keys(this.comments).length === 0) {
+            this.comments = null;
+        }
+
+    }
 }
 
-// const removeItem = function () {
-//     var parent = this.parentElement.parentElement;
-//     parent.removeChild(this.parentElement);
-
-//     var data = this.parentElement.firstChild.innerText;
-//     for (var i = 0; i < listArray.length; i++) {
-
-//         if (listArray[i].content == data) {
-//             listArray.splice(i, 1);
-//             refreshLocal();
-//             break;
-//         }
-//     }
 
 // Функция для обновления данных, например, добавление описания, комментов, или изменение заголовка карточки
 // -^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^
@@ -159,7 +169,10 @@ function createCardDom(id, title, column, date, desc, comments) {
         <span class="dots-btn__dot"></span>
         <span class="dots-btn__dot"></span>
     `;
-    cardBtnDots.addEventListener('click', showModalCard)
+
+    cardBtnDots.addEventListener('click', showModalCardState)
+    divCard.addEventListener('click', createModalDom)
+
     const headingCardTitle = document.createElement('h3');
     headingCardTitle.classList.add('card-preview__title');
     headingCardTitle.textContent = title;
@@ -177,7 +190,7 @@ function createCardDom(id, title, column, date, desc, comments) {
 
 }
 
-function showModalCard() {
+function showModalCardState() {
     const parent = this.parentElement;
 
     const modalState = document.createElement('div');
@@ -189,7 +202,7 @@ function showModalCard() {
     btnDelete.classList.add('modal-state__btn');
     btnDelete.textContent = 'Delete';
 
-
+// -^_^_^_^_-^-^-^-^_^__^_^_^_^_^_^_^_^_^_^_^_^_^___^_^_^_^^__^_^_^6__^-
     btnEdit.addEventListener('click', fullModalEdit);
     btnDelete.addEventListener('click', removeCard);
 
@@ -198,45 +211,242 @@ function showModalCard() {
     parent.append(modalState)
 }
 
+// _^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_
+// Вешаем клик на всю карточку, либо на титульник, либо на Edit, надо думать, ибо еще drag&drop реализовывать
+
+// this.card.addEventListener('click', (e) => {
+//     if (e.target != this.deleteButton) {
+//         this.showMenu.call(this);
+//     }
+// });
+
+function createModalDom() {
+    const cardDiv = this;
+    const parent = cardDiv.closest('.todoList');
+    const parentID = parseInt(parent.getAttribute('data-column-id'));
+    const cardID = parseInt(cardDiv.getAttribute('data-note-id'));
+    const filterCardsArr = cardsArr.filter(item => item.id === cardID);
+    const filterListsArr = listsArr.filter(item => item.id === parentID);
+    console.log('filterListsArr', filterListsArr);
+    console.log('filterCardsArr' ,filterCardsArr);
+    console.log(filterCardsArr[0].title);
+    console.log(filterCardsArr[0].date);
+    const modalInner = document.createElement('div'),
+        modalContainer = document.createElement('div'),
+        modalBlockExit = document.createElement('div'),
+        modalBtnExit = document.createElement('button'),
+        modalTitle = document.createElement('h2'),
+        modalLocation = document.createElement('div'),
+        modalContent = document.createElement('div'),
+        modalContentRow = document.createElement('div'),
+        modalContentRow1 = document.createElement('div'),
+        modalContentRow2 = document.createElement('div'),
+        modalDateBlock = document.createElement('div'),
+        modalDateHeading = document.createElement('h3'),
+        modalDateValue = document.createElement('p'),
+        modalActionBlock = document.createElement('div'),
+        modalActionHeading = document.createElement('h3'),
+        modalActionArchive = document.createElement('button'),
+        modalDescrBlock = document.createElement('div'),
+        modalDescrHeading = document.createElement('h3'),
+        modalDescrInput = document.createElement('textarea'),
+        modalDescrToggleBtns = document.createElement('div'),
+        modalDescrBtnSave = document.createElement('button'),
+        modalDescrBtnExit = document.createElement('button'),
+        modalCommentsInner = document.createElement('div'),
+        modalCommentsInnerHeading = document.createElement('h3'),
+        modalCommentsInput = document.createElement('textarea'),
+        modalCommentsToggleBtns = document.createElement('div'),
+        modalCommentsBtnSave = document.createElement('button'),
+        modalCommentsBtnExit = document.createElement('button');
+
+    // modal once block 
+    const modalCommentBlock = document.createElement('div'),
+        modalCommentDate = document.createElement('p'),
+        modalCommentText = document.createElement('p'),
+        modalCommentEditBlock = document.createElement('div'),
+        modalCommentEditBtn = document.createElement('button'),
+        modalCommentDelBtn = document.createElement('button');
+
+
+
+    modalInner.classList.add('modal-card-full');
+    modalContainer.classList.add('modal-card-full__container');
+    modalBlockExit.classList.add('modal-card-full__exit');
+    modalBtnExit.classList.add('del-btn');
+    modalTitle.classList.add('modal-card-full__title');
+    modalLocation.classList.add('modal-card-full__location');
+    modalContent.classList.add('modal-card-full__content');
+    modalContentRow.classList.add('modal-card-full__row');
+    modalContentRow1.classList.add('modal-card-full__row');
+    modalContentRow2.classList.add('modal-card-full__row');
+    modalDateBlock.classList.add('modal-card-full__date-block', 'date-block');
+    modalDateHeading.classList.add('block__heading');
+    modalDateValue.classList.add('date-block__date');
+    modalActionBlock.classList.add('modal-card-full__actions-block', 'actions-block');
+    modalActionHeading.classList.add('block__heading');
+    modalActionArchive.classList.add('btn-gray');
+    modalDescrBlock.classList.add('modal-card-full__descr', 'descr-modal-card')
+    modalDescrHeading.classList.add('block__heading');
+    modalDescrInput.classList.add('modal-card__textarea');
+    modalDescrToggleBtns.classList.add('modal-card-toggle-btns');
+    modalDescrBtnSave.classList.add('btn-dark');
+    modalDescrBtnExit.classList.add('del-btn');
+    modalCommentsInner.classList.add('modal-card-full__comment', 'comment-modal-card');
+    modalCommentsInnerHeading.classList.add('block__heading');
+    modalCommentsInput.classList.add('modal-card__textarea');
+    modalCommentsToggleBtns.classList.add('modal-card-toggle-btns');
+    modalCommentsBtnSave.classList.add('btn-dark');
+    modalCommentsBtnExit.classList.add('del-btn');
+    // comment once block
+    modalCommentBlock.classList.add('comment');
+    modalCommentDate.classList.add('comment-date');
+    modalCommentText.classList.add('comment-text');
+    modalCommentEditBlock.classList.add('comment-edit-block');
+    modalCommentEditBtn.classList.add('btn-edit-block');
+    modalCommentDelBtn.classList.add('btn-edit-block');
+
+
+    modalBtnExit.innerHTML = '<span></span>';
+    modalTitle.textContent = filterCardsArr[0].title;
+    modalLocation.innerHTML = `in list <span>${filterListsArr[0].title}</span>`;
+    modalDateHeading.textContent = 'Created at';
+    modalDateValue.textContent = filterCardsArr[0].date;
+    modalActionHeading.textContent = 'Actions';
+    modalActionArchive.textContent = 'Archive card';
+    modalDescrHeading.textContent = 'Description';
+    modalDescrInput.placeholder = 'Add a more detailed description';
+    // modalDescrInput.textContent = 'Test description';
+    modalDescrToggleBtns.style.display = 'none';
+    modalDescrBtnSave.textContent = 'Save';
+    modalDescrBtnExit.innerHTML = '<span></span>';
+    modalCommentsInnerHeading.textContent = 'Activity';
+    modalCommentsInput.placeholder = 'Write a comment';
+    modalCommentsBtnSave.textContent = 'Save';
+    modalCommentsBtnExit.innerHTML = '<span></span>';
+    
+
+
+    // ^_^_^_^_^_^_^_^_^__^_^_^_^_^_^_^_^_^_^__^_^_^_^_^_
+    // Модалка дискрипшн и комменты пушим в массив исходный и сохраняем в локал сторадж
+
+
+    modalDescrBtnSave.addEventListener('click', descrSave)
+    modalDescrInput.addEventListener('input', toggleBtnsDescr)
+
+    // modal once block
+    modalCommentDate.textContent = 'Apr 1, 10:00 PM';
+    modalCommentText.textContent = 'Test comment 1';
+    modalCommentEditBtn.textContent = 'Edit';
+    modalCommentDelBtn.textContent = 'Delete';
+
+    modalInner.append(modalContainer);
+    modalContainer.append(modalBlockExit);
+    modalBlockExit.append(modalBtnExit);
+    modalContainer.append(modalTitle);
+    modalContainer.append(modalLocation);
+    modalContainer.append(modalContent);
+    modalContent.append(modalContentRow);
+    modalContentRow.append(modalDateBlock);
+    modalDateBlock.append(modalDateHeading);
+    modalDateBlock.append(modalDateValue);
+    modalContentRow.append(modalActionBlock);
+    modalActionBlock.append(modalActionHeading);
+    modalActionBlock.append(modalActionArchive);
+    modalContent.append(modalContentRow1);
+    modalContentRow1.append(modalDescrBlock);
+    modalDescrBlock.append(modalDescrHeading);
+    modalDescrBlock.append(modalDescrInput);
+    modalDescrBlock.append(modalDescrToggleBtns);
+    modalDescrToggleBtns.append(modalDescrBtnSave);
+    modalDescrToggleBtns.append(modalDescrBtnExit);
+    modalContent.append(modalContentRow2);
+    modalContentRow2.append(modalCommentsInner);
+    modalCommentsInner.append(modalCommentsInnerHeading);
+
+
+
+    // comment once block
+    modalCommentsInner.append(modalCommentBlock);
+    modalCommentBlock.append(modalCommentDate);
+    modalCommentBlock.append(modalCommentText);
+    modalCommentBlock.append(modalCommentEditBlock);
+    modalCommentEditBlock.append(modalCommentEditBtn);
+    modalCommentEditBlock.append(modalCommentDelBtn);
+
+    modalCommentsInner.append(modalCommentsInput);
+    modalCommentsInner.append(modalCommentsToggleBtns);
+    modalCommentsToggleBtns.append(modalCommentsBtnSave);
+    modalCommentsToggleBtns.append(modalCommentsBtnExit);
+    root.append(modalInner);
+
+
+    function toggleBtnsDescr() {
+        const value = modalDescrInput.value;
+        console.log(value);
+        if (value) {
+            modalDescrToggleBtns.style.display = 'flex';
+        } else {
+            modalDescrToggleBtns.style.display = 'none';
+        }
+    }
+
+    function descrSave() {
+        const text = document.createElement('p');
+        text.textContent = modalDescrInput.value;
+        text.addEventListener('click', changeDescr)
+
+        modalDescrHeading.after(text);
+        modalDescrInput.style.display = 'none';
+        modalDescrToggleBtns.style.display = 'none';
+    }
+
+    function changeDescr() {
+        const paragraph = this;
+        const valueParagraph = paragraph.textContent;
+// ^_^_^__^_^_^_^_^_^_^_^_^^_^_^_^_^_^_^_
+        // Получаем значение параграфа, скрываем его, открываем инпут, в который текстконтентом закидываем валью
+
+
+        console.log('valueParagraph', paragraph); 
+        console.log('valueParagraph', valueParagraph); 
+    }
+
+}
+
+
+
+// 
+// Тест визуала модалки
+// 
+
+// const testButton = document.createElement('button');
+// testButton.textContent = 'Button';
+// testButton.className = 'btn-gray';
+// testButton.addEventListener('click', createModalDom)
+// containerNewBoard.append(testButton);
+
+
+// 
+
 function fullModalEdit() {
     ///
 }
 
-// -^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^^_^_^_^_^_^_^_^_^__^^_^_^
-
-// textarea при value !== "" скрывать кнопку показа add block
-
-
 function removeCard() {
-
-
-
-    // Обращаемся к блоку-контейнеру общему для карточек, находим ребенка на уровень ниже и ремувим его
-    // Вытаскиваем предварительно айдишник ребенка, запускаем цикл перебора массива карточек, где сравниваем айдишник в массиве, и нынешний, и слайсом по индексу удаляем элемент
-    // Обновляем локал сторадж, прерываем цикл.
-
     const context = this;
-    const parent =  context.closest('.todoList__body')
+    const parent = context.closest('.todoList__body')
     const cardThis = context.closest('.card-preview');
-    const cardThisId = cardThis.getAttribute('data-note-id');
+    const cardThisId = parseInt(cardThis.getAttribute('data-note-id'));
     parent.removeChild(cardThis)
 
-    
-
-    console.log(parent);
-    console.log(cardThis);
-    console.log(cardThisId);
-    
-
-}
-
-const refreshLocal = () => {
-    let columns = listsArr;
-    let items = cardsArr;
-    localStorage.removeItem('todoContainer');
-    localStorage.removeItem('todoCards');
-    localStorage.setItem('todoContainer', JSON.stringify(columns));
-    localStorage.setItem('todoCards', JSON.stringify(items));
+    for (let i = 0; i < cardsArr.length; i++) {
+        if (cardsArr[i].id === cardThisId) {
+            cardsArr.splice(i, 1);
+            refreshLocal();
+            break;
+        }
+    }
 }
 
 const clearCreateWindow = () => {
@@ -261,8 +471,6 @@ const toggleSaveBtn = (e) => {
     }
 }
 
-// -^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^
-
 // Для полной очистки
 
 const clearAll = () => {
@@ -284,6 +492,15 @@ const clearAll = () => {
 //     localStorage.removeItem('');
 // }
 
+function refreshLocal() {
+    let columns = listsArr;
+    let items = cardsArr;
+    localStorage.removeItem('todoContainer');
+    localStorage.removeItem('todoCards');
+    localStorage.setItem('todoContainer', JSON.stringify(columns));
+    localStorage.setItem('todoCards', JSON.stringify(items));
+}
+
 const addList = () => {
     const newList = new List();
     newList.id = new Date().getTime();
@@ -304,8 +521,8 @@ const addList = () => {
 function addToggleCard() {
     // Вешаем обработчика на кнопку в листе созданном, и вызываем эту функцию
     const btnToggle = this;
-    let parentDiv = this.parentElement.parentElement;
-    let columnId = parentDiv.getAttribute('data-column-id');
+    const parentDiv = this.parentElement.parentElement;
+    const columnId = parentDiv.getAttribute('data-column-id');
     // btnToggle.style.display = 'none';
     const divInputBlock = document.createElement('div');
     divInputBlock.classList.add('enter-title-block');
@@ -318,6 +535,7 @@ function addToggleCard() {
     const btnAddInputBlock = document.createElement('button');
     btnAddInputBlock.classList.add('btn-dark');
     btnAddInputBlock.textContent = "Add a card";
+    btnAddInputBlock.style.display = 'none';
     const btnDelInputBlock = document.createElement('button');
     btnDelInputBlock.classList.add('del-btn');
     btnDelInputBlock.innerHTML = '<span></span>';
@@ -330,9 +548,16 @@ function addToggleCard() {
     // add listener for btns
     btnAddInputBlock.addEventListener('click', addCard);
     btnDelInputBlock.addEventListener('click', removeToggleCard);
-    console.log('btnToggle', btnToggle);
-    console.log('parentDiv', parentDiv);
-    console.log('columnId', columnId);
+    textareaInputBlock.addEventListener('input', btnAddInput);
+
+    function btnAddInput(e) {
+        value = e.target.value;
+        if (value) {
+            btnAddInputBlock.style.display = 'block';
+        } else {
+            btnAddInputBlock.style.display = 'none';
+        }
+    }
 
     // blur криво работает пока что 
     // textareaInputBlock.addEventListener('blur', removeToggleCard)
@@ -359,74 +584,6 @@ function addToggleCard() {
         btnToggle.style.display = 'flex';
     }
 }
-
-
-
-
-
-// const addCard = () => {
-//     const main = document.querySelector('.todoContainer');
-
-//     const f1 = (e) => {
-//         const elTarget = e.target;
-//         const column = e.target.closest('[data-column-id]');
-//         const idColumn = e.target.closest('[data-column-id]').getAttribute('data-column-id');
-//         const bodyTarget = e.target.classList.contains('todoList__body');
-//         console.log(bodyTarget);
-
-//         if (elTarget.classList.contains('btn-add')) {
-//             console.log(elTarget.children);
-//             elTarget.style.display = 'none';
-//             const divInputBlock = document.createElement('div');
-//             divInputBlock.classList.add('enter-title-block');
-//             divInputBlock.style.display = 'flex';
-//             const textareaInputBlock = document.createElement('textarea');
-//             textareaInputBlock.classList.add('textarea-title');
-//             textareaInputBlock.placeholder = "Enter a title for the card...";
-//             const divBtnsInputBlock = document.createElement('div');
-//             divBtnsInputBlock.classList.add('enter-title-block__buttons');
-//             const btnAddInputBlock = document.createElement('button');
-//             btnAddInputBlock.classList.add('btn-dark');
-//             btnAddInputBlock.textContent = "Add a card";
-//             const btnDelInputBlock = document.createElement('button');
-//             btnDelInputBlock.classList.add('del-btn');
-//             btnDelInputBlock.innerHTML = '<span></span>';
-//             divInputBlock.append(textareaInputBlock);
-//             divInputBlock.append(divBtnsInputBlock)
-//             divBtnsInputBlock.append(btnAddInputBlock);
-//             divBtnsInputBlock.append(btnDelInputBlock);
-//             elTarget.before(divInputBlock);
-
-//             const toggleInputBlock = () => {
-//                 textareaInputBlock.value = "";
-//                 divInputBlock.style.display = 'none';
-//                 elTarget.style.display = 'flex';
-//             }
-
-//             const addCardF = () => {
-//                 const newCard = new Card();
-//                 newCard.id = new Date().getTime();
-//                 newCard.title = textareaInputBlock.value;
-//                 newCard.column = idColumn;
-//                 newCard.date = new Date().toLocaleTimeString("en");
-//                 console.log(newCard);
-//                 //add to the local storage
-//                 cardsArr.push(newCard)
-//                 //change the dom
-//                 refreshLocal();
-//                 const item = createCardDom(newCard.id, newCard.title, newCard.column, newCard.date);
-//                 elTarget.before(item);
-//                 console.log(bodyTarget);
-//                 toggleInputBlock();
-//             }
-
-//             btnAddInputBlock.addEventListener('click', addCardF);
-//             btnDelInputBlock.addEventListener('click', toggleInputBlock)
-
-//         }
-//     }
-//     main.addEventListener('click', f1)
-// }
 
 window.onload = () => {
     const list = localStorage.getItem('todoContainer');

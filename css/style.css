@@ -557,10 +557,15 @@ body._lock {
 
 /* --------------------full modal ----------------------------*/
 
+.block__heading {
+    text-transform: uppercase;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 20px;
+    color: #a8b0c2;
+}
 
-
-
-.modal-container {
+.modal-card-full {
     display: flex;
     position: absolute;
     top: 0;
@@ -568,109 +573,150 @@ body._lock {
     background-color: rgba(0, 0, 0, 0.8);
     width: 100%;
     height: 100%;
+    align-items: center;
+    justify-content: center;
+    
 }
-
-.modal {
+.modal-card-full__container {
+    width: 900px;
+    min-height: 650px;
+    display: flex;
+    flex-direction: column;
     background: #ffffff;
-    width: 600px;
-    min-height: 300px;
     border: 1px solid #ebeff4;
     border-radius: 10px;
-    margin: auto;
     padding: 40px 50px 45px 50px;
     position: relative;
 }
-
-.modal-div-exit {
+.modal-card-full__exit {
     position: absolute;
     top: 10px;
     right: 10px;
 }
-
-.modal-title {
+.modal-card-full__title {
     font-weight: 700;
     font-size: 24px;
     line-height: 30px;
     color: #27334f;
-    margin-bottom: 45px;
+    margin-bottom: 10px;
 }
 
-.modal-row {
+.modal-card-full__location {
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 17px;
+    color: #A8B0C2;
+    margin-bottom: 35px;
+}
+
+.modal-card-full__location span {
+    color:#525C72;
+}
+
+
+
+.modal-card-full__content {
+}
+.modal-card-full__row {
     display: flex;
     gap: 15%;
     margin-bottom: 45px;
 }
 
-.modal-row:last-child {
+.modal-card-full__row:last-child {
     margin-bottom: 0;
 }
 
-.modal-row-block {
+.modal-card-full__date-block {
+}
+.date-block {
     display: flex;
     flex-direction: column;
+    gap: 25px;
 }
-
-.modal-date {
+.date-block__date {
     font-weight: 500;
     font-size: 14px;
     line-height: 17px;
     color: #525c72;
 }
-
-.modal-block__heading {
-    text-transform: uppercase;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 20px;
-    color: #a8b0c2;
-    margin-bottom: 20px;
+.modal-card-full__actions-block {
 }
-
-.parent-link {
+.actions-block {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.actions-block__parent {
     font-weight: 500;
     font-size: 14px;
     line-height: 17px;
     color: #525c72;
     transition: all 0.3s ease 0s;
 }
-.parent-link:hover {
+.actions-block__parent:hover {
     color: #27334f;
 }
-
-.modal-description {
+.modal-card-full__descr {
+}
+.descr-modal-card {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    gap: 15px;
+}
+.descr-modal-card p{
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 170%;
+    color: #525C72;
+}
+.modal-card__textarea {
     padding: 15px;
     width: 100%;
+    min-height: 90px;
     border: 1px solid #ebeff4;
     border-radius: 5px;
 }
-
-.modal-description::placeholder {
+.modal-card__textarea::placeholder {
     font-size: 14px;
     line-height: 17px;
     color: #a8b0c2;
 }
 
-.modalDescription {
-    margin-bottom: 2em;
-    line-height: 1.5em;
+.modal-card-full__comment {
 }
-
-.modalDescription textarea {
-    padding: 15px;
+.comment-modal-card {
+    display: flex;
     width: 100%;
-    border: 1px solid #ebeff4;
-    border-radius: 5px;
+    min-height: 90px;
+    flex-direction: column;
+    margin-bottom: 15px;
+    gap: 10px;
 }
 
-.modal-comments {
+.comment-modal-card .block__heading {
+    margin-bottom: 15px;
 }
 
 .comment {
+    display: flex;
+    gap: 10px;
+    flex-direction: column;
+}
+
+.comment-date {
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 15px;
+    color: #a8b0c2;
+}
+
+.comment-text {
     font-weight: 500;
     font-size: 14px;
     line-height: 170%;
     color: #525c72;
-    margin-bottom: 10px;
 }
 
 .comment-edit-block {
@@ -684,9 +730,18 @@ body._lock {
     font-size: 12px;
     line-height: 15px;
     color: #a8b0c2;
-    margin-top: 10px;
     margin-bottom: 20px;
+    text-decoration-line: underline;
 }
+
+.modal-card-toggle-btns {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+
+/* -end modal- */
 
 .commentsInput {
     margin-right: 0.5em;
@@ -695,4 +750,19 @@ body._lock {
 .create-board-container {
     min-width: 300px;
     max-width: 320px;
+}
+
+.btn-gray {
+    padding: 13px 16px;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 17px;
+    text-align: center;
+    color: #27334f;
+    background: #edf0f7;
+    border-radius: 5px;
+}
+
+.btn-gray:hover {
+    background: #dee3f0;
 }
