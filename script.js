@@ -23,11 +23,9 @@ boardEnterBlockBtns.classList.add('enter-title-block__buttons');
 enterBoardBtnSave.classList.add('btn-dark');
 enterBoardBtnExit.classList.add('del-btn');
 
-
 const button = document.createElement('button');
 const pButton = document.createElement('p');
 const buttonCircleAppend = document.createElement('div');
-
 
 button.classList.add("btn-add");
 buttonCircleAppend.classList.add("btn-add__circle-plus");
@@ -62,7 +60,6 @@ class List {
     }
 }
 
-
 class Card {
     constructor(id, title, column, date = "", description = null, comments = null) {
         this.id = id;
@@ -74,54 +71,36 @@ class Card {
         this.domElement
     }
 
-    setTitle(value) {
-        this.title = value;
-    }
+    // setTitle(value) {
+    //     this.title = value;
+    // }
 
-    addDesc(desc) {
-        this.description = desc;
-    }
+    // addDesc(desc) {
+    //     this.description = desc;
+    // }
 
-    addComment(comment) {
-        if (!this.comments) {
-            this.comments = {};
-        }
-        this.comments[comment.id] = comment;
-    }
+    // addComment(comment) {
+    //     if (!this.comments) {
+    //         this.comments = {};
+    //     }
+    //     this.comments[comment.id] = comment;
+    // }
 
-    removeComment(id) {
-        delete this.comments[id];
-        if (Object.keys(this.comments).length === 0) {
-            this.comments = null;
-        }
+    // removeComment(id) {
+    //     delete this.comments[id];
+    //     if (Object.keys(this.comments).length === 0) {
+    //         this.comments = null;
+    //     }
 
-    }
+    // }
 }
-
-
-// Функция для обновления данных, например, добавление описания, комментов, или изменение заголовка карточки
-// -^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^
-// var changeListArray = function(data,status){
-
-//     for(var i=0; i < listArray.length; i++){
-
-//         if(listArray[i].content == data){
-//             listArray[i].status = status;
-//             refreshLocal();
-//             break;
-//         }
-//     }
-// }
-
-
-
-
-
 
 const createListDom = function (id, title) {
     const divList = document.createElement('div');
     divList.setAttribute('data-column-id', id);
     divList.classList.add('todoList');
+    const headingTopBlock = document.createElement('div');
+    headingTopBlock.classList.add('todoList__top');
     const headingListTitle = document.createElement('h2');
     headingListTitle.textContent = title;
     const listBtnDots = document.createElement('button');
@@ -133,6 +112,7 @@ const createListDom = function (id, title) {
     `;
     const divListBody = document.createElement('div');
     divListBody.classList.add('todoList__body');
+
     const btnAddMain = document.createElement('button');
     btnAddMain.id = 'cardBtn';
     btnAddMain.classList.add('btn-add');
@@ -141,17 +121,57 @@ const createListDom = function (id, title) {
         <p>Add a card</p>
     `;
     // add listener for create new cards
+    headingListTitle.addEventListener('dblclick', editTitleList)
     btnAddMain.addEventListener('click', addToggleCard);
 
-    divList.append(headingListTitle);
-    headingListTitle.append(listBtnDots);
+    divList.append(headingTopBlock);
+    headingTopBlock.append(headingListTitle);
+    headingTopBlock.append(listBtnDots);
     divList.append(divListBody);
     divListBody.append(btnAddMain);
-
-
     return divList;
 
 }
+
+function editTitleList() {
+    const titleList = this;
+    titleList.setAttribute('contenteditable', 'true');
+    titleList.focus();
+    titleList.addEventListener('blur', saveTitleList)
+}
+
+function saveTitleList() {
+    const editableHeader = this;
+    editableHeader.removeAttribute('contenteditable');
+    const editableParent = editableHeader.closest('.todoList');
+    const editableId = parseInt(editableParent.getAttribute('data-column-id'));
+    const thisObj = listsArr.find(item => item.id === editableId);
+    thisObj.title = editableHeader.textContent;
+    const i = listsArr.findIndex(item => item.id === thisObj.id);
+    if (listsArr[i]) {
+        listsArr[i] = thisObj
+        console.log('thisObj push successfully in listsArr');
+    } else {
+        listsArr.push(thisObj)
+        listsArr.log('thisObj added to listsArr');
+    };
+    refreshLocal();
+}
+
+// ^_^_^_^_^_^_^__^^_^_^^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^
+// ShowModalList добавляем удаление листа, всех карточек из листа, создание новой карточки, и копирование листа
+
+// const clearList = () => {
+//     listsArr = [];
+//     localStorage.removeItem('todoContainer');
+//     todoContainer.innerHTML = "";
+// }
+
+// function clearCard () {
+//     cardsArr = [];
+//     localStorage.removeItem('');
+// }
+
 
 function createCardDom(id, title, column, date, desc, comments) {
     const divCard = document.createElement('div');
@@ -171,7 +191,7 @@ function createCardDom(id, title, column, date, desc, comments) {
     `;
 
     cardBtnDots.addEventListener('click', showModalCardState)
-    divCard.addEventListener('click', createModalDom)
+    divCard.addEventListener('dblclick', createModalDom)
 
     const headingCardTitle = document.createElement('h3');
     headingCardTitle.classList.add('card-preview__title');
@@ -202,35 +222,54 @@ function showModalCardState() {
     btnDelete.classList.add('modal-state__btn');
     btnDelete.textContent = 'Delete';
 
-// -^_^_^_^_-^-^-^-^_^__^_^_^_^_^_^_^_^_^_^_^_^_^___^_^_^_^^__^_^_^6__^-
-    btnEdit.addEventListener('click', fullModalEdit);
+    // -^_^_^_^_-^-^-^-^_^__^_^_^_^_^_^_^_^_^_^_^_^_^___^_^_^_^^__^_^_^6__^-
+    btnEdit.addEventListener('click', editTitleCard);
     btnDelete.addEventListener('click', removeCard);
 
     modalState.append(btnEdit);
     modalState.append(btnDelete);
     parent.append(modalState)
+    function a1() {
+        modalState.remove()
+    }
+    setTimeout(a1, 3000);
 }
 
-// _^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_
-// Вешаем клик на всю карточку, либо на титульник, либо на Edit, надо думать, ибо еще drag&drop реализовывать
+function editTitleCard() {
+    const element = this;
+    const parentEl = element.closest('.card-preview');
+    const titleCardEl = parentEl.children[1];
+    titleCardEl.setAttribute('contenteditable', 'true');
+    titleCardEl.focus();
+    titleCardEl.addEventListener('blur', saveTitleCardPrev);
+    element.parentElement.remove();
+}
 
-// this.card.addEventListener('click', (e) => {
-//     if (e.target != this.deleteButton) {
-//         this.showMenu.call(this);
-//     }
-// });
+function saveTitleCardPrev() {
+    const editableHeader = this;
+    editableHeader.removeAttribute('contenteditable');
+    const editableParent = this.closest('.card-preview');
+    const editableId = parseInt(editableParent.getAttribute('data-note-id'));
+    const thisObj = cardsArr.find(item => item.id === editableId);
+    thisObj.title = editableHeader.textContent;
+    const i = cardsArr.findIndex(item => item.id === thisObj.id);
+    if (cardsArr[i]) {
+        cardsArr[i] = thisObj
+        console.log('thisObj push successfully');
+    } else {
+        cardsArr.push(thisObj)
+        console.log('thisObj added to cardArr');
+    };
+    refreshLocal();
+}
 
 function createModalDom() {
     const cardDiv = this;
     const parent = cardDiv.closest('.todoList');
     const parentID = parseInt(parent.getAttribute('data-column-id'));
     const cardID = parseInt(cardDiv.getAttribute('data-note-id'));
-    const filterCardsArr = cardsArr.filter(item => item.id === cardID);
-    const filterListsArr = listsArr.filter(item => item.id === parentID);
-    console.log('filterListsArr', filterListsArr);
-    console.log('filterCardsArr' ,filterCardsArr);
-    console.log(filterCardsArr[0].title);
-    console.log(filterCardsArr[0].date);
+    const cardArrItem = cardsArr.find(item => item.id === cardID);
+    const listArrItem = listsArr.find(item => item.id === parentID);
     const modalInner = document.createElement('div'),
         modalContainer = document.createElement('div'),
         modalBlockExit = document.createElement('div'),
@@ -269,7 +308,6 @@ function createModalDom() {
         modalCommentDelBtn = document.createElement('button');
 
 
-
     modalInner.classList.add('modal-card-full');
     modalContainer.classList.add('modal-card-full__container');
     modalBlockExit.classList.add('modal-card-full__exit');
@@ -298,6 +336,7 @@ function createModalDom() {
     modalCommentsToggleBtns.classList.add('modal-card-toggle-btns');
     modalCommentsBtnSave.classList.add('btn-dark');
     modalCommentsBtnExit.classList.add('del-btn');
+
     // comment once block
     modalCommentBlock.classList.add('comment');
     modalCommentDate.classList.add('comment-date');
@@ -308,15 +347,16 @@ function createModalDom() {
 
 
     modalBtnExit.innerHTML = '<span></span>';
-    modalTitle.textContent = filterCardsArr[0].title;
-    modalLocation.innerHTML = `in list <span>${filterListsArr[0].title}</span>`;
+    modalTitle.textContent = cardArrItem.title;
+    modalTitle.setAttribute('data-card-id', cardID);
+    modalLocation.innerHTML = `in list <span>${listArrItem.title}</span>`;
     modalDateHeading.textContent = 'Created at';
-    modalDateValue.textContent = filterCardsArr[0].date;
+    modalDateValue.textContent = cardArrItem.date;
     modalActionHeading.textContent = 'Actions';
     modalActionArchive.textContent = 'Archive card';
     modalDescrHeading.textContent = 'Description';
     modalDescrInput.placeholder = 'Add a more detailed description';
-    // modalDescrInput.textContent = 'Test description';
+    modalDescrInput.textContent = cardArrItem.description ? cardArrItem.description : '';
     modalDescrToggleBtns.style.display = 'none';
     modalDescrBtnSave.textContent = 'Save';
     modalDescrBtnExit.innerHTML = '<span></span>';
@@ -324,13 +364,16 @@ function createModalDom() {
     modalCommentsInput.placeholder = 'Write a comment';
     modalCommentsBtnSave.textContent = 'Save';
     modalCommentsBtnExit.innerHTML = '<span></span>';
-    
+
 
 
     // ^_^_^_^_^_^_^_^_^__^_^_^_^_^_^_^_^_^_^__^_^_^_^_^_
-    // Модалка дискрипшн и комменты пушим в массив исходный и сохраняем в локал сторадж
+    // Модалка комменты пушим в массив исходный и сохраняем в локал сторадж
 
-
+    modalInner.addEventListener('click', closeModalFull)
+    modalBtnExit.addEventListener('click', closeModalBtn)
+    modalTitle.addEventListener('dblclick', changeTitleModal)
+    modalActionArchive.addEventListener('click', removeCardModal)
     modalDescrBtnSave.addEventListener('click', descrSave)
     modalDescrInput.addEventListener('input', toggleBtnsDescr)
 
@@ -380,7 +423,6 @@ function createModalDom() {
     modalCommentsToggleBtns.append(modalCommentsBtnExit);
     root.append(modalInner);
 
-
     function toggleBtnsDescr() {
         const value = modalDescrInput.value;
         console.log(value);
@@ -391,11 +433,64 @@ function createModalDom() {
         }
     }
 
+    function changeTitleModal() {
+        modalTitle.setAttribute('contenteditable', 'true');
+        modalTitle.focus();
+        modalTitle.addEventListener('blur', saveTitleCardModal)
+    }
+    
+    function saveTitleCardModal() {
+        const context = this;
+        modalTitle.removeAttribute('contenteditable');
+        console.log('modalTitle.textContent', modalTitle.textContent);
+        // const editableId = parseInt(modalTitle.getAttribute('data-card-id'));
+        cardArrItem.title = modalTitle.textContent;
+        const i = cardsArr.findIndex(item => item.id === cardArrItem.id);
+        if (cardsArr[i]) {
+            cardsArr[i] = cardArrItem
+            console.log('cardArrItem push successfully');
+        } else {
+            cardsArr.push(cardArrItem)
+            console.log('cardArrItem added to cardArr');
+        };
+        // Лучше ничего я придумать не смог, как через два перебора добраться до нужной мне карточки и поменять title там,
+        // ибо если этого не делать, данные попадают в локальное хранилище, но, только после обновления страницы, титульник меняется на превью,
+        // а после закрытия модалки и без перезагрузки страницы титульник менялся только в модалке. Возможно есть решение лучше... 
+        const someVar = document.querySelectorAll('.todoList');
+        someVar.forEach(item => {
+            if (item.getAttribute('data-column-id') == parentID) {
+                console.log('item', item);
+                const chield = item.children[1].children
+                console.log('chield', chield);
+                for (let el of chield) {
+                    if (el.getAttribute('data-note-id') == cardID) {
+                        el.children[1].textContent = cardArrItem.title
+                    }
+                }
+            };
+        })
+        refreshLocal();
+    }
+
+
     function descrSave() {
         const text = document.createElement('p');
         text.textContent = modalDescrInput.value;
         text.addEventListener('click', changeDescr)
-
+        console.log('text', text);
+        cardArrItem.description = text.textContent;
+        console.log('cardArrItem.description added', cardArrItem);
+        // Push my object in cardArr
+        const i = cardsArr.findIndex(item => item.id === cardArrItem.id);
+        console.log('i', i);
+        if (cardsArr[i]) {
+            cardsArr[i] = cardArrItem
+        } else {
+            cardsArr.push(cardArrItem)
+            console.log('push cardArrItem', 'true');
+        };
+        console.log('cardsArr', cardsArr);
+        refreshLocal();
         modalDescrHeading.after(text);
         modalDescrInput.style.display = 'none';
         modalDescrToggleBtns.style.display = 'none';
@@ -404,34 +499,49 @@ function createModalDom() {
     function changeDescr() {
         const paragraph = this;
         const valueParagraph = paragraph.textContent;
-// ^_^_^__^_^_^_^_^_^_^_^_^^_^_^_^_^_^_^_
-        // Получаем значение параграфа, скрываем его, открываем инпут, в который текстконтентом закидываем валью
+        paragraph.style.display = 'none';
+        modalDescrInput.textContent = valueParagraph;
+        modalDescrInput.style.display = 'block';
+        modalDescrToggleBtns.style.display = 'flex';
+    }
 
-
-        console.log('valueParagraph', paragraph); 
-        console.log('valueParagraph', valueParagraph); 
+    function removeCardModal() {
+        console.log('cardDiv', cardDiv);
+        console.log('parent', parent);
+        console.log('parentID', parentID);
+        console.log('cardID', cardID);
+        cardDiv.remove();
+        for (let i = 0; i < cardsArr.length; i++) {
+            if (cardsArr[i].id === cardID) {
+                cardsArr.splice(i, 1);
+                refreshLocal();
+                break;
+            }
+        }
+        modalInner.remove()
     }
 
 }
 
 
-
-// 
-// Тест визуала модалки
-// 
-
-// const testButton = document.createElement('button');
-// testButton.textContent = 'Button';
-// testButton.className = 'btn-gray';
-// testButton.addEventListener('click', createModalDom)
-// containerNewBoard.append(testButton);
-
-
-// 
-
-function fullModalEdit() {
-    ///
+function closeModalFull(e) {
+    const thisItm = this;
+    if (e.target.classList.contains("modal-card-full")) {
+        refreshLocal();
+        thisItm.remove();
+    }
+    
 }
+
+function closeModalBtn() {
+    const thisItem = this;
+    const modal = thisItem.closest('.modal-card-full');
+    if (thisItem) {
+        refreshLocal();
+        modal.remove();
+    }
+}
+
 
 function removeCard() {
     const context = this;
@@ -473,24 +583,13 @@ const toggleSaveBtn = (e) => {
 
 // Для полной очистки
 
-const clearAll = () => {
+function clearAll() {
     listsArr = [];
     cardsArr = [];
     localStorage.removeItem('todoContainer');
     localStorage.removeItem('todoCards')
     todoContainer.innerHTML = "";
 }
-
-// const clearList = () => {
-//     listsArr = [];
-//     localStorage.removeItem('todoContainer');
-//     todoContainer.innerHTML = "";
-// }
-
-// function clearCard () {
-//     cardsArr = [];
-//     localStorage.removeItem('');
-// }
 
 function refreshLocal() {
     let columns = listsArr;
@@ -609,7 +708,8 @@ window.onload = () => {
             let title = cardsArr[j].title;
             let column = cardsArr[j].column;
             let date = cardsArr[j].date;
-            let cardOne = createCardDom(id, title, column, date);
+            let description = cardsArr[j].description;
+            let cardOne = createCardDom(id, title, column, date, description);
             parentDiv.forEach(el => {
                 if (el.getAttribute('data-column-id') === column) {
                     let item = el.children[1].querySelector('.btn-add');

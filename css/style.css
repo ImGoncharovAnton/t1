@@ -79,6 +79,7 @@ body {
     -webkit-text-size-adjust: 100%;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    background-color: #e5e5e5;
 }
 
 input,
@@ -247,7 +248,6 @@ body._lock {
 }
 
 #root {
-    background-color: #e5e5e5;
     min-width: 1200px;
     padding: 50px 10px;
     display: flex;
@@ -272,7 +272,7 @@ body._lock {
     position: relative;
 }
 
-.todoList h2 {
+.todoList__top {
     padding: 20px 30px;
     background: #27334f;
     border-radius: 5px 5px 0px 0px;
@@ -283,6 +283,10 @@ body._lock {
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+
+.todoList__top h2 {
+    width: 80%;
 }
 
 .enter-title-block {
@@ -480,10 +484,6 @@ body._lock {
     padding-bottom: 10px;
     border-bottom: 1px solid #ebeff4;
     transition: all 0.3s ease 0s;
-    cursor: pointer;
-}
-.card-preview__title:hover {
-    color: #a8b0c2;
 }
 
 .card-preview__count-comments {
