@@ -289,6 +289,14 @@ body._lock {
     width: 80%;
 }
 
+.todoList__top .modal-state {
+    top: 45px;
+    right: -40px;
+    width: 100px;
+    height: 135px;
+    z-index: 2;
+}
+
 .enter-title-block {
     width: 100%;
     padding: 10px;
@@ -468,6 +476,10 @@ body._lock {
     position: relative;
 }
 
+.card-preview__top .modal-state {
+    z-index: 3;
+}
+
 .card-preview__date {
     font-weight: 500;
     font-size: 12px;
@@ -482,8 +494,10 @@ body._lock {
     line-height: 25px;
     color: #27334f;
     padding-bottom: 10px;
-    border-bottom: 1px solid #ebeff4;
     transition: all 0.3s ease 0s;
+}
+.card-preview__title:not(:last-child) {
+    border-bottom: 1px solid #ebeff4;
 }
 
 .card-preview__count-comments {
