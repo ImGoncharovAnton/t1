@@ -272,6 +272,11 @@ body._lock {
     position: relative;
 }
 
+.todoList .btn-add {
+    width: 280px;
+    margin: 0 auto 10px auto;
+}
+
 .todoList__top {
     padding: 20px 30px;
     background: #27334f;
@@ -298,7 +303,7 @@ body._lock {
 }
 
 .enter-title-block {
-    width: 100%;
+    width: 280px;
     padding: 10px;
     background: #ffffff;
     border: 1px solid #ebeff4;
@@ -307,6 +312,7 @@ body._lock {
     display: none;
     flex-direction: column;
     gap: 10px;
+    margin: 0 auto 10px auto;
 }
 
 .textarea-title {
@@ -330,12 +336,6 @@ body._lock {
     gap: 10px;
     padding: 20px 10px 10px 10px;
 }
-
-/* .todoList__cards {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-} */
 
 .btn-add {
     display: flex;

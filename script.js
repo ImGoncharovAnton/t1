@@ -111,7 +111,7 @@ const createListDom = function (id, title) {
     headingTopBlock.append(headingListTitle);
     headingTopBlock.append(listBtnDots);
     divList.append(divListBody);
-    divListBody.append(btnAddMain);
+    divList.append(btnAddMain);
     return divList;
 
 }
@@ -134,7 +134,7 @@ function showModalListState() {
     btnCopyList.textContent = 'Copy list';
 
     btnNewCard.addEventListener('click', addNewCardFromModal)
-    // btnDelete.addEventListener('click', )
+    btnDelete.addEventListener('click', removeList)
     btnClearList.addEventListener('click', clearCardsThisList)
     // btnCopyList.addEventListener('click', )
 
@@ -143,58 +143,68 @@ function showModalListState() {
     modalState.append(btnClearList);
     modalState.append(btnCopyList);
     parent.append(modalState)
-    // function a1() {
-    //     modalState.remove()
-    // }
-    // setTimeout(a1, 3000);
+    modalState.addEventListener('mouseleave', removeModalState)
+    function removeModalState() {
+        modalState.remove()
+    }
 }
 
 function addNewCardFromModal() {
-    const parentDiv = this.closest('.todoList__top');
-    const divCards = parentDiv.nextElementSibling;
-    const btnCreateCard = divCards.lastChild
+    const parentDiv = this.closest('.todoList');
+    const btnCreateCard = parentDiv.lastChild;
+    console.log('btnCreateCard', btnCreateCard);
+
+    btnCreateCard.addEventListener('focus', addToggleCard)
     btnCreateCard.focus();
 }
 
 function clearCardsThisList() {
     const context = this;
-    const parent = context.closest('.todoList')
-    const parentID = parent.getAttribute('data-column-id')
-    console.log('parentID', parentID);
+    const parent = context.closest('.todoList');
+    const parentID = parseInt(parent.getAttribute('data-column-id'));
+    const cardsContainer = parent.children[1];
+    console.log('cardsContainer', cardsContainer);
+    cardsContainer.innerHTML = '';
 
     for (let i = 0; i < cardsArr.length; i++) {
-        // console.log('cardsArr[i]', cardsArr[i]);
-        if (cardsArr[i].column === parentID) {
-            if (cardsArr[i] != null) {
-                console.log(cardsArr[i]);
-                cardsArr.splice(i, 1);
+        if (cardsArr[i].column == parentID) {
+            if (cardsArr[i]) {
+                cardsArr.splice(i, 999);
                 refreshLocal();
-                break;
             }
-           
-            // cardsArr.splice(i, 1);
-            // refreshLocal();
-            // break;
         }
-        
     }
-
 }
+
+function removeList() {
+    const thisItem = this;
+    const parent = thisItem.closest('.todoContainer');
+    const thisList = thisItem.closest('.todoList');
+    const thisListId = parseInt(thisList.getAttribute('data-column-id'))
+    parent.removeChild(thisList);
+    for (let i = 0; i < cardsArr.length; i++) {
+        if (cardsArr[i].column == thisListId) {
+            if (cardsArr[i]) {
+                cardsArr.splice(i, 999);
+                refreshLocal();
+            }
+        }
+    }
+    for (let i = 0; i < listsArr.length; i++) {
+        if (listsArr[i].id === thisListId) {
+            listsArr.splice(i, 1);
+            refreshLocal();
+            break;
+        }
+    }
+    
+}
+
+// Мб копировать можно будет так же перебором двух массивов.
+// Надо придумать только как название вводить и новый массив создавать, или просто без названия делать его
 
 // ^_^_^_^_^_^_^__^^_^_^^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^
 // ShowModalList добавляем удаление листа, всех карточек из листа, создание новой карточки, и копирование листа
-
-// const clearList = () => {
-//     listsArr = [];
-//     localStorage.removeItem('todoContainer');
-//     todoContainer.innerHTML = "";
-// }
-
-// function clearCard () {
-//     cardsArr = [];
-//     localStorage.removeItem('');
-// }
-
 
 
 function editTitleList() {
@@ -280,10 +290,10 @@ function showModalCardState() {
     modalState.append(btnEdit);
     modalState.append(btnDelete);
     parent.append(modalState)
-    function a1() {
+    modalState.addEventListener('mouseleave', removeModalState)
+    function removeModalState() {
         modalState.remove()
     }
-    setTimeout(a1, 3000);
 }
 
 function editTitleCard() {
@@ -774,7 +784,8 @@ const addList = () => {
 function addToggleCard() {
     // Вешаем обработчика на кнопку в листе созданном, и вызываем эту функцию
     const btnToggle = this;
-    const parentDiv = this.parentElement.parentElement;
+    const parentDiv = this.parentElement;
+    const cardsContainer = parentDiv.children[1];
     const columnId = parentDiv.getAttribute('data-column-id');
     btnToggle.style.display = 'none';
     const divInputBlock = document.createElement('div');
@@ -801,7 +812,13 @@ function addToggleCard() {
     // add listener for btns
     btnAddInputBlock.addEventListener('click', addCard);
     btnDelInputBlock.addEventListener('click', removeToggleCard);
+    textareaInputBlock.focus();
     textareaInputBlock.addEventListener('input', btnAddInput);
+    textareaInputBlock.addEventListener('blur', () => {
+        if (textareaInputBlock.value == '') {
+            removeToggleCard();
+        }
+    })
 
     function btnAddInput(e) {
         value = e.target.value;
@@ -811,9 +828,6 @@ function addToggleCard() {
             btnAddInputBlock.style.display = 'none';
         }
     }
-
-    // blur криво работает пока что 
-    // textareaInputBlock.addEventListener('blur', removeToggleCard)
 
     function addCard() {
         const newCard = new Card();
@@ -832,7 +846,7 @@ function addToggleCard() {
         //change the dom
         refreshLocal();
         const item = createCardDom(newCard.id, newCard.title, newCard.column, newCard.date);
-        divInputBlock.before(item);
+        cardsContainer.appendChild(item);
         removeToggleCard();
     }
 
@@ -872,8 +886,8 @@ window.onload = () => {
             let cardOne = createCardDom(id, title, column, date, description, comments);
             parentDiv.forEach(el => {
                 if (el.getAttribute('data-column-id') === column) {
-                    let item = el.children[1].querySelector('.btn-add');
-                    item.insertAdjacentElement('beforebegin', cardOne);
+                    let item = el.children[1];
+                    item.appendChild(cardOne);
                 };
             })
         }
