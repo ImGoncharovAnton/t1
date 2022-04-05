@@ -757,6 +757,56 @@ body._lock {
 
 /* -end modal- */
 
+.copyListInnerWindow {
+    position: absolute;
+    top: 45px;
+    right: -20px;
+    width: 280px;
+    height: 155px;
+    z-index: 5;
+}
+
+.edit-preview {
+    position: relative;
+    gap: 10px;
+    width: 100%;
+    padding: 10px;
+    height: 100%;
+    background: #ffffff;
+    border: 1px solid #ebeff4;
+    border-radius: 5px;
+}
+
+.edit-preview__input {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #c9cdd9;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.edit-preview__input[placeholder] {
+    font-weight: 700;
+    font-size: 20px;
+    line-height: 25px;
+    color: #27334f;
+}
+
+.edit-preview .del-btn {
+    display: block;
+    margin-bottom: 10px;
+    margin-left: auto;
+}
+
+.edit-preview .btn-dark {
+    padding: 10px 15px;
+}
+
+/*  */
+
+
+
+
 .commentsInput {
     margin-right: 0.5em;
 }

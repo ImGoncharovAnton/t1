@@ -136,7 +136,7 @@ function showModalListState() {
     btnNewCard.addEventListener('click', addNewCardFromModal)
     btnDelete.addEventListener('click', removeList)
     btnClearList.addEventListener('click', clearCardsThisList)
-    // btnCopyList.addEventListener('click', )
+    btnCopyList.addEventListener('click', copyListTo)
 
     modalState.append(btnNewCard);
     modalState.append(btnDelete);
@@ -197,11 +197,160 @@ function removeList() {
             break;
         }
     }
-    
+
 }
 
+function copyListTo() {
+    const thisItem = this;
+    const listTopHeader = thisItem.closest('.todoList__top');
+    const listDiv = thisItem.closest('.todoList');
+    const cardsContainerOld = listDiv.children[1];
+    const listID = parseInt(listDiv.getAttribute('data-column-id'));
+    const copyListInnerWindow = document.createElement('div');
+    copyListInnerWindow.classList.add('copyListInnerWindow');
+    const copyListCreateBlock = document.createElement('div');
+    copyListCreateBlock.classList.add('edit-preview');
+    const copyListBLockBtnExit = document.createElement('button');
+    copyListBLockBtnExit.classList.add('del-btn');
+    copyListBLockBtnExit.innerHTML = '<span></span>';
+    const copyListInput = document.createElement('input');
+    copyListInput.classList.add('edit-preview__input');
+    copyListInput.placeholder = 'Enter title new list'
+    const copyListBtnSave = document.createElement('button');
+    copyListBtnSave.classList.add('btn-dark');
+    copyListBtnSave.textContent = 'Save';
+    copyListBtnSave.style.display = 'none';
+
+
+    copyListInput.addEventListener('input', showBtnCopySave)
+    copyListBtnSave.addEventListener('click', addCopyList)
+    copyListBLockBtnExit.addEventListener('click', removeCopyModal)
+
+    copyListInnerWindow.append(copyListCreateBlock);
+    copyListCreateBlock.append(copyListBLockBtnExit);
+    copyListCreateBlock.append(copyListInput);
+    copyListCreateBlock.append(copyListBtnSave);
+    listTopHeader.append(copyListInnerWindow);
+    copyListInput.focus();
+
+    copyListInnerWindow.addEventListener('mouseleave', removeCopyModal)
+    function removeCopyModal() {
+        copyListInnerWindow.remove()
+    }
+
+    function showBtnCopySave(e) {
+        let value = e.target.value;
+        if (value) {
+            copyListBtnSave.style.display = 'block';
+        } else {
+            copyListBtnSave.style.display = 'none';
+        }
+    }
+
+    // ^_^_^_^_^__%_%_#_%#_%_$^_$%#_$3-$#_$#_$_#_$#_$_#$_#$4
+
+
+    function addCopyList() {
+
+        // Create new empty list
+        const newList = new List();
+        newList.id = new Date().getTime();
+        console.log('type of newList.id', typeof(newList.id));
+        newList.title = copyListInput.value;
+        listsArr.push(newList);
+        // add to the local storage
+        refreshLocal();
+        // change the dom
+        let listItem = createListDom(newList.id, copyListInput.value);
+        todoContainer.appendChild(listItem);
+
+        console.log('newList.id ', newList.id);
+        let someItemId = new Date().getTime();
+        const cardsContainerNew = listItem.children[1];
+        // if (cardsContainerNew.classList.contains('todoList__body')) {
+        //     cardsContainerNew.remove()
+        // }
+        let someFragment = document.createDocumentFragment();
+        someFragment = cardsContainerOld.cloneNode(true);
+        const collectionChildrenFragment = someFragment.children;
+
+        const thisArrObjFilter = cardsArr.filter(item => item.column == listID);
+        const deepCopy = JSON.parse(JSON.stringify(thisArrObjFilter));
+        for (let elem of deepCopy) {
+            elem.column = newList.id;
+            elem.id = someItemId++;
+            cardsArr.push(elem);
+            refreshLocal();
+        }
+        // for (let i = 0; i < deepCopy.length; i++) {
+        //     deepCopy[i].column = newList.id;
+        //     deepCopy[i].id = someItemId++;
+        //     cardsArr.push(deepCopy[i]);
+        //     refreshLocal();
+        // }
+        console.log('deepCopy NEW', deepCopy);
+        console.log('cardsArr after', cardsArr);
+
+        // Отрисовывает карточки по новой из массива скопированных карточек, но не сохраняет пока что
+        for (let i = 0; i < deepCopy.length; i++) {
+            let id = deepCopy[i].id;
+            let title = deepCopy[i].title;
+            let column = deepCopy[i].column;
+            let date = deepCopy[i].date;
+            let description = deepCopy[i].description;
+            let comments = deepCopy[i].comments;
+            let cardOne = createCardDom(id, title, column, date, description, comments);
+            cardsContainerNew.appendChild(cardOne);
+            console.log('cardOne', cardOne);
+        }
+        
+
+        // listItem.firstChild.after(someFragment);
+        copyListInnerWindow.remove()
+        
+        // cardsContainerOld
+        // данный цикл меняет и старые и новые карточки, 
+        // нужно будет через find filter работать скорее всего
+        // for (let i = 0; i < cardsArr.length; i++) {
+        //     if (cardsArr[i].column == listID) {
+        //         let item = cardsArr[i];
+        //         item.column = newList.id;
+        //         item.id = someItemId++;
+        //         cardsArr.push(item);
+        //         console.log('cardsArr', cardsArr);
+        //         refreshLocal();
+        //     }
+        // }
+
+     
+
+        // thisArrObjFilter.forEach(el => {
+        //     console.log('el OLD', el);
+        //     el.column = newList.id;
+        //     el.id = someItemId++;
+        //     console.log('el NEW', el);
+
+        // })
+        // thisArrObjFilter.forEach(element => {
+        //     console.log('element', element);
+        //     cardsArr.push(element);
+
+        // })
+        // console.log('thisArrObjFilter', thisArrObjFilter);
+        // thisObj.comments = newcommentsArr;
+        // console.log('thisObj', thisObj);
+        // const i = cardsArr.findIndex(item => item.id === thisObj.id);
+        // if (cardsArr[i]) {
+        //     cardsArr[i] = thisObj
+        //     console.log('thisObj push successfully [comments]');
+        // }
+        // refreshLocal();
+
+    }
+}
+
+
 // Мб копировать можно будет так же перебором двух массивов.
-// Надо придумать только как название вводить и новый массив создавать, или просто без названия делать его
 
 // ^_^_^_^_^_^_^__^^_^_^^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^
 // ShowModalList добавляем удаление листа, всех карточек из листа, создание новой карточки, и копирование листа
@@ -235,6 +384,7 @@ function saveTitleList() {
 function createCardDom(id, title, column, date, desc, comments) {
     const divCard = document.createElement('div');
     divCard.setAttribute('data-note-id', id);
+    divCard.setAttribute('draggable', 'true');
     divCard.classList.add('card-preview');
     const divCardTop = document.createElement('div');
     divCardTop.classList.add('card-preview__top');
@@ -879,13 +1029,14 @@ window.onload = () => {
         for (let j = 0; j < cardsArr.length; j++) {
             let id = cardsArr[j].id;
             let title = cardsArr[j].title;
-            let column = cardsArr[j].column;
+            let column = parseInt(cardsArr[j].column);
+            console.log('typeof(column) = ', typeof(column));
             let date = cardsArr[j].date;
             let description = cardsArr[j].description;
             let comments = cardsArr[j].comments;
             let cardOne = createCardDom(id, title, column, date, description, comments);
             parentDiv.forEach(el => {
-                if (el.getAttribute('data-column-id') === column) {
+                if (parseInt(el.getAttribute('data-column-id')) == column) {
                     let item = el.children[1];
                     item.appendChild(cardOne);
                 };
@@ -902,3 +1053,4 @@ boardTextareaTitle.addEventListener('input', toggleSaveBtn);
 enterBoardBtnExit.addEventListener('click', clearCreateWindow)
 enterBoardBtnSave.addEventListener('click', addList)
 // addCard()
+
