@@ -3,6 +3,8 @@ let listsArr = [];
 let cardsArr = [];
 const commentsArr = [];
 
+let dragStartIndex;
+
 //-------------main------------
 
 const todoContainer = document.createElement("div");
@@ -291,7 +293,7 @@ function copyListTo() {
         console.log('deepCopy NEW', deepCopy);
         console.log('cardsArr after', cardsArr);
 
-        // Отрисовывает карточки по новой из массива скопированных карточек, но не сохраняет пока что
+        // Отрисовывает карточки по новой из массива скопированных карточек
         for (let i = 0; i < deepCopy.length; i++) {
             let id = deepCopy[i].id;
             let title = deepCopy[i].title;
@@ -412,9 +414,10 @@ function createCardDom(id, title, column, date, desc, comments) {
     divCardTop.append(divCardDate);
     divCardTop.append(cardBtnDots);
     divCard.append(headingCardTitle);
-    if (comments) {
+    if (comments && comments.length > 0) {
         divCardComments.innerText = `${comments.length} comments`;
         divCard.append(divCardComments);
+        refreshLocal();
     }
 
     return divCard;
@@ -596,6 +599,7 @@ function createModalDom() {
             modalCommentEditBlock.append(modalCommentEditBtn);
             modalCommentEditBlock.append(modalCommentDelBtn);
             commentsArr.push(item)
+            
         }
         console.log('commentsArr from localstorage', commentsArr);
     }
@@ -670,7 +674,6 @@ function createModalDom() {
     }
 
     function saveTitleCardModal() {
-        const context = this;
         modalTitle.removeAttribute('contenteditable');
         console.log('modalTitle.textContent', modalTitle.textContent);
         // const editableId = parseInt(modalTitle.getAttribute('data-card-id'));
