@@ -3,7 +3,9 @@ let listsArr = [];
 let cardsArr = [];
 const commentsArr = [];
 
-let dragStartIndex;
+let dragStartIndex = null;
+let draggedItem = null;
+let droppedItem = null;
 
 //-------------main------------
 
@@ -108,6 +110,15 @@ const createListDom = function (id, title) {
     listBtnDots.addEventListener('click', showModalListState)
     headingListTitle.addEventListener('dblclick', editTitleList)
     btnAddMain.addEventListener('click', addToggleCard);
+    // listener for drag and drop
+    // divList.addEventListener('dragenter', handlerDragEnter);
+    // divList.addEventListener('dragleave', handlerDragLeave);
+    // divList.addEventListener('dragover', handlerDragOver);
+    // divList.addEventListener('drop', handlerDrop);
+
+    // drag and drop v2
+    divList.addEventListener('dragover', dragOver);
+    divList.addEventListener('dragend', dragEnd);
 
     divList.append(headingTopBlock);
     headingTopBlock.append(headingListTitle);
@@ -257,7 +268,7 @@ function copyListTo() {
         // Create new empty list
         const newList = new List();
         newList.id = new Date().getTime();
-        console.log('type of newList.id', typeof(newList.id));
+        console.log('type of newList.id', typeof (newList.id));
         newList.title = copyListInput.value;
         listsArr.push(newList);
         // add to the local storage
@@ -305,11 +316,11 @@ function copyListTo() {
             cardsContainerNew.appendChild(cardOne);
             console.log('cardOne', cardOne);
         }
-        
+
 
         // listItem.firstChild.after(someFragment);
         copyListInnerWindow.remove()
-        
+
         // cardsContainerOld
         // данный цикл меняет и старые и новые карточки, 
         // нужно будет через find filter работать скорее всего
@@ -324,7 +335,7 @@ function copyListTo() {
         //     }
         // }
 
-     
+
 
         // thisArrObjFilter.forEach(el => {
         //     console.log('el OLD', el);
@@ -350,13 +361,6 @@ function copyListTo() {
 
     }
 }
-
-
-// Мб копировать можно будет так же перебором двух массивов.
-
-// ^_^_^_^_^_^_^__^^_^_^^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^_^
-// ShowModalList добавляем удаление листа, всех карточек из листа, создание новой карточки, и копирование листа
-
 
 function editTitleList() {
     const titleList = this;
@@ -403,6 +407,22 @@ function createCardDom(id, title, column, date, desc, comments) {
 
     cardBtnDots.addEventListener('click', showModalCardState)
     divCard.addEventListener('dblclick', createModalDom)
+    // drag and drop listener
+    // divCard.addEventListener('dragstart', handlerDragStart);
+    // divCard.addEventListener('dragend', handlerDragEnd);
+    // divCard.addEventListener('drag', handlerDrag);
+    // divCard.addEventListener('dragenter', handlerDragEnterDropped);
+    // divCard.addEventListener('dragleave', handlerDragLeaveDropped);
+    // divCard.addEventListener('drop', handlerDropCard)
+    // divCard.addEventListener('dragenter', () => {
+    //     droppedItem = divCard;
+    // });
+    // divCard.addEventListener('dragleave', () => {
+    //     droppedItem = null;
+    // })
+
+    // drag and drop v2
+    divCard.addEventListener('dragstart', dragStart);
 
     const headingCardTitle = document.createElement('h3');
     headingCardTitle.classList.add('card-preview__title');
@@ -599,7 +619,7 @@ function createModalDom() {
             modalCommentEditBlock.append(modalCommentEditBtn);
             modalCommentEditBlock.append(modalCommentDelBtn);
             commentsArr.push(item)
-            
+
         }
         console.log('commentsArr from localstorage', commentsArr);
     }
@@ -870,7 +890,6 @@ function closeModalBtn() {
     }
 }
 
-
 function removeCard() {
     const context = this;
     const parent = context.closest('.todoList__body')
@@ -932,7 +951,6 @@ const addList = () => {
     boardEnterTitle.style.display = 'none'
     clearCreateWindow();
 }
-
 
 function addToggleCard() {
     // Вешаем обработчика на кнопку в листе созданном, и вызываем эту функцию
@@ -1010,6 +1028,85 @@ function addToggleCard() {
     }
 }
 
+// -------------------------------------Drag and Drop ------------------
+
+let movedCard;
+let afterElement;
+let movedCardID;
+let afterElementID;
+let listToID;
+
+function dragStart() {
+    movedCard = this;
+    movedCard.classList.add('dragging');
+}
+function dragEnd(e) {
+    if (afterElement != undefined) {
+        afterElementID = parseInt(afterElement.getAttribute('data-note-id'));
+    } else {
+        afterElementID = undefined;
+    }
+    movedCardID = parseInt(movedCard.getAttribute('data-note-id'));
+    listToID = this.getAttribute('data-column-id');
+    movedCard.classList.remove('dragging');
+    moveElement(movedCardID, afterElementID, listToID);
+}
+
+function dragOver(e) {
+    e.preventDefault();
+    afterElement = getDragAfterElement(this, e.clientY);
+    if (afterElement == null) {
+        this.children[1].append(movedCard);
+    } else {
+        this.children[1].insertBefore(movedCard, afterElement);
+    }
+};
+
+function getDragAfterElement(container, y) {
+
+    const draggableElements = [
+        ...container.querySelectorAll('.card-preview:not(.dragging)'),
+    ];
+    return draggableElements.reduce(
+        (closest, child) => {
+            const box = child.getBoundingClientRect();
+            const offset = y - box.top - box.height / 2;
+            if (offset < 0 && offset > closest.offset) {
+                return { offset: offset, element: child };
+            } else {
+                return closest;
+            }
+        },
+        { offset: Number.NEGATIVE_INFINITY }
+    ).element;
+};
+
+function moveElement(movedElemID, beforeElemID, listID) {
+    let movedCard;
+    cardsArr = cardsArr.filter(item => {
+        if (item.id == movedElemID) {
+            item.column = +listID;
+            movedCard = item
+            console.log('movedCard', movedCard);
+        } else {
+            return item;
+        }
+    });
+    if (beforeElemID === undefined) {
+        cardsArr.push(movedCard);
+    } else {
+        let arrFindIndex = cardsArr.findIndex(item => item.id == beforeElemID);
+        console.log('arrFindIndex', arrFindIndex);
+        if (arrFindIndex != -1) {
+            cardsArr.splice(arrFindIndex, 0, movedCard)
+        }
+    }
+    refreshLocal()
+}
+
+
+// ---------------------------Drag and Drop end  ------------------------
+
 window.onload = () => {
     const list = localStorage.getItem('todoContainer');
     const card = localStorage.getItem('todoCards');
@@ -1033,7 +1130,7 @@ window.onload = () => {
             let id = cardsArr[j].id;
             let title = cardsArr[j].title;
             let column = parseInt(cardsArr[j].column);
-            console.log('typeof(column) = ', typeof(column));
+            console.log('typeof(column) = ', typeof (column));
             let date = cardsArr[j].date;
             let description = cardsArr[j].description;
             let comments = cardsArr[j].comments;
@@ -1046,7 +1143,6 @@ window.onload = () => {
             })
         }
     }
-
 }
 
 // add event buttons for create new lists
