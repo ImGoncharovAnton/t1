@@ -1104,7 +1104,6 @@ function moveElement(movedElemID, beforeElemID, listID) {
     refreshLocal()
 }
 
-
 // ---------------------------Drag and Drop end  ------------------------
 
 window.onload = () => {
