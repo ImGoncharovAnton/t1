@@ -3,10 +3,6 @@ let listsArr = [];
 let cardsArr = [];
 const commentsArr = [];
 
-let dragStartIndex = null;
-let draggedItem = null;
-let droppedItem = null;
-
 //-------------main------------
 
 const todoContainer = document.createElement("div");
@@ -110,13 +106,7 @@ const createListDom = function (id, title) {
     listBtnDots.addEventListener('click', showModalListState)
     headingListTitle.addEventListener('dblclick', editTitleList)
     btnAddMain.addEventListener('click', addToggleCard);
-    // listener for drag and drop
-    // divList.addEventListener('dragenter', handlerDragEnter);
-    // divList.addEventListener('dragleave', handlerDragLeave);
-    // divList.addEventListener('dragover', handlerDragOver);
-    // divList.addEventListener('drop', handlerDrop);
-
-    // drag and drop v2
+    // drag and drop 
     divList.addEventListener('dragover', dragOver);
     divList.addEventListener('dragend', dragEnd);
 
@@ -165,8 +155,6 @@ function showModalListState() {
 function addNewCardFromModal() {
     const parentDiv = this.closest('.todoList');
     const btnCreateCard = parentDiv.lastChild;
-    console.log('btnCreateCard', btnCreateCard);
-
     btnCreateCard.addEventListener('focus', addToggleCard)
     btnCreateCard.focus();
 }
@@ -176,7 +164,6 @@ function clearCardsThisList() {
     const parent = context.closest('.todoList');
     const parentID = parseInt(parent.getAttribute('data-column-id'));
     const cardsContainer = parent.children[1];
-    console.log('cardsContainer', cardsContainer);
     cardsContainer.innerHTML = '';
 
     for (let i = 0; i < cardsArr.length; i++) {
@@ -260,15 +247,11 @@ function copyListTo() {
         }
     }
 
-    // ^_^_^_^_^__%_%_#_%#_%_$^_$%#_$3-$#_$#_$_#_$#_$_#$_#$4
-
-
     function addCopyList() {
 
         // Create new empty list
         const newList = new List();
         newList.id = new Date().getTime();
-        console.log('type of newList.id', typeof (newList.id));
         newList.title = copyListInput.value;
         listsArr.push(newList);
         // add to the local storage
@@ -277,7 +260,6 @@ function copyListTo() {
         let listItem = createListDom(newList.id, copyListInput.value);
         todoContainer.appendChild(listItem);
 
-        console.log('newList.id ', newList.id);
         let someItemId = new Date().getTime();
         const cardsContainerNew = listItem.children[1];
         // if (cardsContainerNew.classList.contains('todoList__body')) {
@@ -285,7 +267,6 @@ function copyListTo() {
         // }
         let someFragment = document.createDocumentFragment();
         someFragment = cardsContainerOld.cloneNode(true);
-        const collectionChildrenFragment = someFragment.children;
 
         const thisArrObjFilter = cardsArr.filter(item => item.column == listID);
         const deepCopy = JSON.parse(JSON.stringify(thisArrObjFilter));
@@ -295,16 +276,8 @@ function copyListTo() {
             cardsArr.push(elem);
             refreshLocal();
         }
-        // for (let i = 0; i < deepCopy.length; i++) {
-        //     deepCopy[i].column = newList.id;
-        //     deepCopy[i].id = someItemId++;
-        //     cardsArr.push(deepCopy[i]);
-        //     refreshLocal();
-        // }
-        console.log('deepCopy NEW', deepCopy);
-        console.log('cardsArr after', cardsArr);
 
-        // Отрисовывает карточки по новой из массива скопированных карточек
+        // Draws cards one by one from an array of copied cards
         for (let i = 0; i < deepCopy.length; i++) {
             let id = deepCopy[i].id;
             let title = deepCopy[i].title;
@@ -314,51 +287,8 @@ function copyListTo() {
             let comments = deepCopy[i].comments;
             let cardOne = createCardDom(id, title, column, date, description, comments);
             cardsContainerNew.appendChild(cardOne);
-            console.log('cardOne', cardOne);
         }
-
-
-        // listItem.firstChild.after(someFragment);
         copyListInnerWindow.remove()
-
-        // cardsContainerOld
-        // данный цикл меняет и старые и новые карточки, 
-        // нужно будет через find filter работать скорее всего
-        // for (let i = 0; i < cardsArr.length; i++) {
-        //     if (cardsArr[i].column == listID) {
-        //         let item = cardsArr[i];
-        //         item.column = newList.id;
-        //         item.id = someItemId++;
-        //         cardsArr.push(item);
-        //         console.log('cardsArr', cardsArr);
-        //         refreshLocal();
-        //     }
-        // }
-
-
-
-        // thisArrObjFilter.forEach(el => {
-        //     console.log('el OLD', el);
-        //     el.column = newList.id;
-        //     el.id = someItemId++;
-        //     console.log('el NEW', el);
-
-        // })
-        // thisArrObjFilter.forEach(element => {
-        //     console.log('element', element);
-        //     cardsArr.push(element);
-
-        // })
-        // console.log('thisArrObjFilter', thisArrObjFilter);
-        // thisObj.comments = newcommentsArr;
-        // console.log('thisObj', thisObj);
-        // const i = cardsArr.findIndex(item => item.id === thisObj.id);
-        // if (cardsArr[i]) {
-        //     cardsArr[i] = thisObj
-        //     console.log('thisObj push successfully [comments]');
-        // }
-        // refreshLocal();
-
     }
 }
 
@@ -379,7 +309,6 @@ function saveTitleList() {
     const i = listsArr.findIndex(item => item.id === thisObj.id);
     if (listsArr[i]) {
         listsArr[i] = thisObj
-        console.log('thisObj push successfully in listsArr');
     } else {
         listsArr.push(thisObj)
         listsArr.log('thisObj added to listsArr');
@@ -407,21 +336,7 @@ function createCardDom(id, title, column, date, desc, comments) {
 
     cardBtnDots.addEventListener('click', showModalCardState)
     divCard.addEventListener('dblclick', createModalDom)
-    // drag and drop listener
-    // divCard.addEventListener('dragstart', handlerDragStart);
-    // divCard.addEventListener('dragend', handlerDragEnd);
-    // divCard.addEventListener('drag', handlerDrag);
-    // divCard.addEventListener('dragenter', handlerDragEnterDropped);
-    // divCard.addEventListener('dragleave', handlerDragLeaveDropped);
-    // divCard.addEventListener('drop', handlerDropCard)
-    // divCard.addEventListener('dragenter', () => {
-    //     droppedItem = divCard;
-    // });
-    // divCard.addEventListener('dragleave', () => {
-    //     droppedItem = null;
-    // })
-
-    // drag and drop v2
+    // drag and drop
     divCard.addEventListener('dragstart', dragStart);
 
     const headingCardTitle = document.createElement('h3');
@@ -496,6 +411,7 @@ function saveTitleCardPrev() {
 }
 
 function createModalDom() {
+    // create modal blocks
     const cardDiv = this;
     const parent = cardDiv.closest('.todoList');
     const parentID = parseInt(parent.getAttribute('data-column-id'));
@@ -583,50 +499,6 @@ function createModalDom() {
     modalCommentsBtnSave.textContent = 'Save';
     modalCommentsBtnExit.innerHTML = '<span></span>';
 
-    console.log('cardArrItem.comments', cardArrItem.comments);
-
-    if (cardArrItem.comments != null) {
-        const commsArray = cardArrItem.comments;
-        for (let item of commsArray) {
-            console.log('item for cardArrItem', item);
-            const modalCommentBlock = document.createElement('div'),
-                modalCommentDate = document.createElement('p'),
-                modalCommentText = document.createElement('p'),
-                modalCommentEditBlock = document.createElement('div'),
-                modalCommentEditBtn = document.createElement('button'),
-                modalCommentDelBtn = document.createElement('button');
-
-            modalCommentBlock.classList.add('comment');
-            modalCommentDate.classList.add('comment-date');
-            modalCommentText.classList.add('comment-text');
-            modalCommentEditBlock.classList.add('comment-edit-block');
-            modalCommentEditBtn.classList.add('btn-edit-block');
-            modalCommentDelBtn.classList.add('btn-edit-block');
-            modalCommentBlock.setAttribute('data-comment-id', item.id)
-            console.log('modalCommentBlock', modalCommentBlock);
-            modalCommentDate.textContent = item.date;
-            console.log('modalCommentDate', modalCommentDate);
-            modalCommentText.textContent = item.title;
-            console.log('modalCommentText', modalCommentText);
-            modalCommentEditBtn.textContent = 'Edit';
-            modalCommentDelBtn.textContent = 'Delete';
-            modalCommentDelBtn.addEventListener('click', removeComment)
-
-            modalCommentsContentBlock.append(modalCommentBlock);
-            modalCommentBlock.append(modalCommentDate);
-            modalCommentBlock.append(modalCommentText);
-            modalCommentBlock.append(modalCommentEditBlock);
-            modalCommentEditBlock.append(modalCommentEditBtn);
-            modalCommentEditBlock.append(modalCommentDelBtn);
-            commentsArr.push(item)
-
-        }
-        console.log('commentsArr from localstorage', commentsArr);
-    }
-
-    // ^_^_^_^_^_^_^_^_^__^_^_^_^_^_^_^_^_^_^__^_^_^_^_^_
-    // Модалка комменты пушим в массив исходный и сохраняем в локал сторадж
-
     modalInner.addEventListener('click', closeModalFull)
     modalBtnExit.addEventListener('click', closeModalBtn)
     modalTitle.addEventListener('dblclick', changeTitleModal)
@@ -636,8 +508,6 @@ function createModalDom() {
     modalDescrInput.addEventListener('input', toggleBtnsDescr)
     modalCommentsInput.addEventListener('input', toggleBtnsComment)
     modalCommentsBtnSave.addEventListener('click', createComments)
-
-
 
     modalInner.append(modalContainer);
     modalContainer.append(modalBlockExit);
@@ -669,6 +539,40 @@ function createModalDom() {
     modalCommentsToggleBtns.append(modalCommentsBtnExit);
     root.append(modalInner);
 
+    if (cardArrItem.comments != null) {
+        const commsArray = cardArrItem.comments;
+        for (let item of commsArray) {
+            const modalCommentBlock = document.createElement('div'),
+                modalCommentDate = document.createElement('p'),
+                modalCommentText = document.createElement('p'),
+                modalCommentEditBlock = document.createElement('div'),
+                modalCommentEditBtn = document.createElement('button'),
+                modalCommentDelBtn = document.createElement('button');
+
+            modalCommentBlock.classList.add('comment');
+            modalCommentDate.classList.add('comment-date');
+            modalCommentText.classList.add('comment-text');
+            modalCommentEditBlock.classList.add('comment-edit-block');
+            modalCommentEditBtn.classList.add('btn-edit-block');
+            modalCommentDelBtn.classList.add('btn-edit-block');
+            modalCommentBlock.setAttribute('data-comment-id', item.id)
+            modalCommentDate.textContent = item.date;
+            modalCommentText.textContent = item.title;
+            modalCommentEditBtn.textContent = 'Edit';
+            modalCommentDelBtn.textContent = 'Delete';
+            modalCommentDelBtn.addEventListener('click', removeComment)
+
+            modalCommentsContentBlock.append(modalCommentBlock);
+            modalCommentBlock.append(modalCommentDate);
+            modalCommentBlock.append(modalCommentText);
+            modalCommentBlock.append(modalCommentEditBlock);
+            modalCommentEditBlock.append(modalCommentEditBtn);
+            modalCommentEditBlock.append(modalCommentDelBtn);
+            commentsArr.push(item)
+
+        }
+    }
+
     function toggleBtnsDescr() {
         const value = modalDescrInput.value;
         if (value) {
@@ -695,26 +599,18 @@ function createModalDom() {
 
     function saveTitleCardModal() {
         modalTitle.removeAttribute('contenteditable');
-        console.log('modalTitle.textContent', modalTitle.textContent);
         // const editableId = parseInt(modalTitle.getAttribute('data-card-id'));
         cardArrItem.title = modalTitle.textContent;
         const i = cardsArr.findIndex(item => item.id === cardArrItem.id);
         if (cardsArr[i]) {
             cardsArr[i] = cardArrItem
-            console.log('cardArrItem push successfully');
         } else {
             cardsArr.push(cardArrItem)
-            console.log('cardArrItem added to cardArr');
         };
-        // Лучше ничего я придумать не смог, как через два перебора добраться до нужной мне карточки и поменять title там,
-        // ибо если этого не делать, данные попадают в локальное хранилище, но, только после обновления страницы, титульник меняется на превью,
-        // а после закрытия модалки и без перезагрузки страницы титульник менялся только в модалке. Возможно есть решение лучше... 
         const someVar = document.querySelectorAll('.todoList');
         someVar.forEach(item => {
             if (item.getAttribute('data-column-id') == parentID) {
-                console.log('item', item);
                 const chield = item.children[1].children
-                console.log('chield', chield);
                 for (let el of chield) {
                     if (el.getAttribute('data-note-id') == cardID) {
                         el.children[1].textContent = cardArrItem.title
@@ -730,19 +626,15 @@ function createModalDom() {
         const text = document.createElement('p');
         text.textContent = modalDescrInput.value;
         text.addEventListener('click', changeDescr)
-        console.log('text', text);
         cardArrItem.description = text.textContent;
-        console.log('cardArrItem.description added', cardArrItem);
+
         // Push my object in cardArr
         const i = cardsArr.findIndex(item => item.id === cardArrItem.id);
-        console.log('i', i);
         if (cardsArr[i]) {
             cardsArr[i] = cardArrItem
         } else {
             cardsArr.push(cardArrItem)
-            console.log('push cardArrItem', 'true');
         };
-        console.log('cardsArr', cardsArr);
         refreshLocal();
         modalDescrHeading.after(text);
         modalDescrInput.style.display = 'none';
@@ -783,25 +675,20 @@ function createModalDom() {
         if (commentsArr != null) {
             newcommentsArr = [...commentsArr];
             newcommentsArr.push(newComment)
-            console.log('562 push spread newcommentsArr', newcommentsArr);
         } else {
             newcommentsArr.push(newComment)
-            console.log('565 just push newcommentsArr', newcommentsArr)
         }
         const thisObj = cardsArr.find(item => item.id === cardID);
         thisObj.comments = newcommentsArr;
-        console.log('thisObj', thisObj);
         const i = cardsArr.findIndex(item => item.id === thisObj.id);
         if (cardsArr[i]) {
             cardsArr[i] = thisObj
-            console.log('thisObj push successfully [comments]');
         }
         refreshLocal();
         modalCommentsInput.value = '';
         modalCommentsToggleBtns.style.display = 'none';
 
 
-        // console.log('thisObj.comments.length', thisObj.comments.length);
         const modalCommentBlock = document.createElement('div'),
             modalCommentDate = document.createElement('p'),
             modalCommentText = document.createElement('p'),
@@ -836,12 +723,9 @@ function createModalDom() {
         const thisItem = this;
         const parentThis = thisItem.closest('.comment');
         const parentThisId = parseInt(parentThis.getAttribute('data-comment-id'));
-        console.log('thisItem', thisItem);
-        console.log('parentThis', parentThis);
         parentThis.remove();
         for (let i = 0; i < cardsArr.length; i++) {
             if (cardsArr[i].id === cardID) {
-                console.log('cardsArr[i].comments', cardsArr[i].comments);
                 for (let j = 0; j < cardsArr[i].comments.length > 0; j++) {
                     if (cardsArr[i].comments[j].id === parentThisId) {
                         cardsArr[i].comments.splice(j, 1);
@@ -855,10 +739,6 @@ function createModalDom() {
     }
 
     function removeCardModal() {
-        console.log('cardDiv', cardDiv);
-        console.log('parent', parent);
-        console.log('parentID', parentID);
-        console.log('cardID', cardID);
         cardDiv.remove();
         for (let i = 0; i < cardsArr.length; i++) {
             if (cardsArr[i].id === cardID) {
@@ -917,6 +797,14 @@ const showInput = () => {
     boardEnterTitle.style.display = 'flex';
     button.style.display = 'none';
     enterBoardBtnSave.style.display = 'none';
+
+    boardTextareaTitle.focus();
+    boardTextareaTitle.addEventListener('blur', () => {
+        if (boardTextareaTitle.value == '') {
+            clearCreateWindow();
+        }
+    })
+
 }
 
 const toggleSaveBtn = (e) => {
@@ -940,7 +828,6 @@ const addList = () => {
     const newList = new List();
     newList.id = new Date().getTime();
     newList.title = boardTextareaTitle.value
-    console.log(newList);
     listsArr.push(newList);
     //add to the local storage
     refreshLocal();
@@ -1011,7 +898,6 @@ function addToggleCard() {
             day: "numeric",
         };
         newCard.date = new Date().toLocaleString("en", options);
-        console.log(newCard);
         //add to the local storage
         cardsArr.push(newCard)
         //change the dom
@@ -1040,6 +926,7 @@ function dragStart() {
     movedCard = this;
     movedCard.classList.add('dragging');
 }
+
 function dragEnd(e) {
     if (afterElement != undefined) {
         afterElementID = parseInt(afterElement.getAttribute('data-note-id'));
@@ -1049,6 +936,7 @@ function dragEnd(e) {
     movedCardID = parseInt(movedCard.getAttribute('data-note-id'));
     listToID = this.getAttribute('data-column-id');
     movedCard.classList.remove('dragging');
+    this.classList.remove('test')
     moveElement(movedCardID, afterElementID, listToID);
 }
 
@@ -1087,7 +975,6 @@ function moveElement(movedElemID, beforeElemID, listID) {
         if (item.id == movedElemID) {
             item.column = +listID;
             movedCard = item
-            console.log('movedCard', movedCard);
         } else {
             return item;
         }
@@ -1096,7 +983,6 @@ function moveElement(movedElemID, beforeElemID, listID) {
         cardsArr.push(movedCard);
     } else {
         let arrFindIndex = cardsArr.findIndex(item => item.id == beforeElemID);
-        console.log('arrFindIndex', arrFindIndex);
         if (arrFindIndex != -1) {
             cardsArr.splice(arrFindIndex, 0, movedCard)
         }
@@ -1112,7 +998,6 @@ window.onload = () => {
     if (list != null) {
         columns = JSON.parse(list);
         listsArr = columns;
-        console.log('listsArr', listsArr);
         for (let i = 0; i < listsArr.length; i++) {
             let id = listsArr[i].id;
             let title = listsArr[i].title;
@@ -1123,13 +1008,11 @@ window.onload = () => {
     if (card != null) {
         items = JSON.parse(card);
         cardsArr = items;
-        console.log('cardsArr', cardsArr);
         const parentDiv = document.querySelectorAll('.todoList');
         for (let j = 0; j < cardsArr.length; j++) {
             let id = cardsArr[j].id;
             let title = cardsArr[j].title;
             let column = parseInt(cardsArr[j].column);
-            console.log('typeof(column) = ', typeof (column));
             let date = cardsArr[j].date;
             let description = cardsArr[j].description;
             let comments = cardsArr[j].comments;
@@ -1145,10 +1028,8 @@ window.onload = () => {
 }
 
 // add event buttons for create new lists
-
 button.addEventListener('click', showInput);
 boardTextareaTitle.addEventListener('input', toggleSaveBtn);
 enterBoardBtnExit.addEventListener('click', clearCreateWindow)
 enterBoardBtnSave.addEventListener('click', addList)
-// addCard()
 

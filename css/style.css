@@ -69,6 +69,7 @@ body {
 }
 
 body {
+    overflow-y: hidden;
     color: #000;
     line-height: 1.2;
     font-family: "Gilroy", sans-serif;
@@ -80,6 +81,7 @@ body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     background-color: #e5e5e5;
+    position: relative;
 }
 
 input,
@@ -170,6 +172,8 @@ body._lock {
 /* ------------------Header----------------- */
 
 .header {
+    min-width: 100vw;
+    position: fixed;
     background-color: #fff;
     padding: 35px 0;
 }
@@ -221,23 +225,6 @@ body._lock {
 
 /* ------------------------------------- */
 
-.card-preview.dragged {
-    opacity: 0.1;
-}
-
-.item-main.dragged {
-    opacity: 0.4;
-}
-
-.item-main.under {
-    margin-top: 20px;
-    background-color: orange;
-}
-
-.card-preview.under {
-    opacity: 0.5;
-}
-
 #addTodoListDiv {
     margin-left: 2em;
     margin-top: 4em;
@@ -249,7 +236,7 @@ body._lock {
 
 #root {
     min-width: 1200px;
-    padding: 50px 10px;
+    padding: 150px 10px 50px 10px;
     display: flex;
     gap: 30px;
 }
@@ -270,6 +257,7 @@ body._lock {
     border: 1px solid #ebeff4;
     border-radius: 5px;
     position: relative;
+    max-height: 480px;
 }
 
 .todoList .btn-add {
@@ -331,6 +319,7 @@ body._lock {
 }
 
 .todoList__body {
+    overflow-y: auto;
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -581,7 +570,8 @@ body._lock {
 
 .modal-card-full {
     display: flex;
-    position: absolute;
+    overflow-y: auto;
+    position: fixed;
     top: 0;
     left: 0;
     background-color: rgba(0, 0, 0, 0.8);
@@ -592,8 +582,10 @@ body._lock {
     
 }
 .modal-card-full__container {
-    width: 900px;
-    min-height: 650px;
+    overflow-y: auto;
+    min-width: 700px;
+    max-width: 900px;
+    max-height: 630px;
     display: flex;
     flex-direction: column;
     background: #ffffff;
@@ -802,10 +794,6 @@ body._lock {
     padding: 10px 15px;
 }
 
-/*  */
-
-
-
 
 .commentsInput {
     margin-right: 0.5em;
@@ -830,3 +818,9 @@ body._lock {
 .btn-gray:hover {
     background: #dee3f0;
 }
+
+.dragging {
+    opacity: 0.5;
+    box-shadow: 0 0 10px rgba(1, 4, 49, 0.5);
+}
+
