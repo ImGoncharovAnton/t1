@@ -752,7 +752,7 @@ body._lock {
 .copyListInnerWindow {
     position: absolute;
     top: 45px;
-    right: -20px;
+    right: -80px;
     width: 280px;
     height: 155px;
     z-index: 5;
