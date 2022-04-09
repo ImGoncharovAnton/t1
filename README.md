@@ -1,3 +1,5 @@
+#Task manager
+
 This is an example of a simple task manager, an assignment for an internship at Leviossa IT.
 This task manager was created following the example of Trello.
 Used pure Javascript, html and scc.
